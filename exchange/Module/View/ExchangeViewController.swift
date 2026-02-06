@@ -9,8 +9,6 @@ import UIKit
 
 class ExchangeViewController: UIViewController {
     
-    // Label, Label, TextField, Button TextField, Sheet
-    
     // MARK: - UI Components
     
     private let titleLabel: UILabel = {
@@ -35,8 +33,7 @@ class ExchangeViewController: UIViewController {
         return label
     }()
     
-    private let fromExchangeItemView = ExchangeItemView(currency: "USDc", exchangeRate: "$9,990")
-    private let toExchangeItemView = ExchangeItemView(currency: "MXN", exchangeRate: "$184,065.59")
+    private let exchangeView = ExchangeView()
     
     // MARK: - Stack Views
     
@@ -44,16 +41,11 @@ class ExchangeViewController: UIViewController {
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             exchangeRateLabel,
-            fromExchangeItemView,
-            toExchangeItemView
+            exchangeView
         ])
         stackView.axis = .vertical
-        stackView.spacing = 24
-        stackView.alignment = .fill
-        stackView.distribution = .fill
-        
-        //stackView.backgroundColor = .gray
-        
+        stackView.spacing = 8 // Between Labels
+        stackView.setCustomSpacing(24, after: exchangeRateLabel)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
         return stackView
@@ -63,25 +55,34 @@ class ExchangeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        setupView()
         setupConstraints()
     }
     
     // MARK: - Setup
 
-    private func setupUI() {
+    private func setupView() {
         view.backgroundColor = UIColor(named: "bgColor")
         view.addSubview(mainStackView)
+        
+        // Handle Swap Button tap
+        exchangeView.onSwap = { [weak self] in
+            self?.handleSwapButtonTap()
+        }
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            
             // Main Stack Constraints
             mainStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 70),
-            
-            mainStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            mainStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            mainStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            mainStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
         ])
+    }
+    
+    // MARK: - Button Action
+    
+    private func handleSwapButtonTap() {
+        print("Swap button tapped")
     }
 }
