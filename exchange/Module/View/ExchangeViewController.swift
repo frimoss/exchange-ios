@@ -15,7 +15,7 @@ class ExchangeViewController: UIViewController {
         let label = UILabel()
         label.text = "Exchange calculator"
         label.font = .systemFont(ofSize: 30, weight: .bold)
-        label.textColor = UIColor(named: "primary")
+        label.textColor = UIColor(named: "textPrimary")
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -26,7 +26,7 @@ class ExchangeViewController: UIViewController {
         let label = UILabel()
         label.text = "1 USDc = 18.4097 MXN"
         label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.textColor = UIColor(named: "green")
+        label.textColor = UIColor(named: "accentGreen")
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -62,7 +62,7 @@ class ExchangeViewController: UIViewController {
     // MARK: - Setup
 
     private func setupView() {
-        view.backgroundColor = UIColor(named: "bgColor")
+        view.backgroundColor = UIColor(named: "backgroundPrimary")
         view.addSubview(mainStackView)
         
         // Handle Swap Button tap

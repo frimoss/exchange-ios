@@ -25,7 +25,7 @@ final class SwapButton: UIButton {
     
     private func configure() {
         setImage(UIImage(systemName: "arrow.down.circle.fill"), for: .normal)
-        tintColor = UIColor(named: "green")
+        tintColor = UIColor(named: "accentGreen")
         backgroundColor = .white
         translatesAutoresizingMaskIntoConstraints = false
         
@@ -49,6 +49,6 @@ final class SwapButton: UIButton {
         
         // Border
         layer.borderWidth = 6
-        layer.borderColor = UIColor(named: "bgColor")?.cgColor
+        layer.borderColor = UIColor(named: "backgroundPrimary")?.cgColor
     }
 }

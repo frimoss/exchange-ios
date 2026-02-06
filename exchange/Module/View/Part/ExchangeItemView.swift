@@ -15,7 +15,7 @@ final class ExchangeItemView: UIView {
         let label = UILabel()
         label.text = "USDc"
         label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.textColor = UIColor(named: "primary")
+        label.textColor = UIColor(named: "textPrimary")
         
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -25,7 +25,7 @@ final class ExchangeItemView: UIView {
         let label = UILabel()
         label.text = "$9,999"
         label.font = .systemFont(ofSize: 16, weight: .bold)
-        label.textColor = UIColor(named: "primary")
+        label.textColor = UIColor(named: "textPrimary")
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -36,11 +36,13 @@ final class ExchangeItemView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupView()
+        setupConstraints()
     }
     
     convenience init(currency: String, exchangeRate: String) {
@@ -59,7 +61,9 @@ final class ExchangeItemView: UIView {
         
         addSubview(currencyLabel)
         addSubview(exchangeRateLabel)
-        
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             // Height constraint
             heightAnchor.constraint(equalToConstant: 66),
