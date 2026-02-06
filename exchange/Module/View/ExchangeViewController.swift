@@ -51,7 +51,7 @@ class ExchangeViewController: UIViewController {
         return stackView
     }()
 
-    // MARK: - Life Cycle
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,5 +84,27 @@ class ExchangeViewController: UIViewController {
     
     private func handleSwapButtonTap() {
         print("Swap button tapped")
+        
+        showSheet(title: "Choose currency", content: ContentViewController())
+    }
+}
+
+class ContentViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .systemBackground
+        view.layer.cornerRadius = 16
+        
+        // TODO: Sheet Content
+        
+    }
+}
+
+// MARK: - Extension UIViewController -
+
+extension UIViewController {
+    func showSheet(title: String, content: UIViewController) {
+        let sheet = SheetViewController(title: title, content: content)
+        present(sheet, animated: true)
     }
 }
