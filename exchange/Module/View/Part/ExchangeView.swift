@@ -12,22 +12,13 @@ final class ExchangeView: UIView {
     // MARK: - Properties
     
     var onSwap: (() -> Void)?
+    var showCurrencySheet: (() -> Void)?
     
     // MARK: - UI Components
     
-    private let fromExchangeItemView: ExchangeItemView = {
-        let view = ExchangeItemView(currency: "USDc", exchangeRate: "$9,990")
-        view.translatesAutoresizingMaskIntoConstraints = false
-        
-        return view
-    }()
+    private let fromCurrencyView = CurrencyInputView(currency: "USDc", amount: "9,990.90")
     
-    private let toExchangeItemView: ExchangeItemView = {
-        let view = ExchangeItemView(currency: "MXN", exchangeRate: "$184,065.59")
-        view.translatesAutoresizingMaskIntoConstraints = false
-        
-        return view
-    }()
+    private let toCurrencyView = CurrencyInputView(currency: "MXN", amount: "184,065.59", showButton: true)
     
     private let swapButton = SwapButton()
     
@@ -48,37 +39,42 @@ final class ExchangeView: UIView {
     // MARK: - Setup
     
     private func setupView() {
-        addSubview(fromExchangeItemView)
-        addSubview(toExchangeItemView)
+        addSubview(fromCurrencyView)
+        addSubview(toCurrencyView)
         addSubview(swapButton)
         
-        swapButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        swapButton.addTarget(self, action: #selector(swapButtonTapped), for: .touchUpInside)
+        
+        // Handle Currency Tap
+        toCurrencyView.onCurrencyTap = { [weak self] in
+            self?.showCurrencySheet?()
+        }
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             // From Exchange Item View
-            fromExchangeItemView.topAnchor.constraint(equalTo: topAnchor),
-            fromExchangeItemView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            fromExchangeItemView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            fromCurrencyView.topAnchor.constraint(equalTo: topAnchor),
+            fromCurrencyView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            fromCurrencyView.trailingAnchor.constraint(equalTo: trailingAnchor),
             
             // Swap Button
             swapButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-            swapButton.centerYAnchor.constraint(equalTo: fromExchangeItemView.bottomAnchor, constant: 8),
+            swapButton.centerYAnchor.constraint(equalTo: fromCurrencyView.bottomAnchor, constant: 8),
             swapButton.widthAnchor.constraint(equalToConstant: 36),  // 24 + (6 * 2)
             swapButton.heightAnchor.constraint(equalToConstant: 36), // size + (border * 2)
             
             // To Exchange Item View
-            toExchangeItemView.topAnchor.constraint(equalTo: fromExchangeItemView.bottomAnchor, constant: 16), // spacing
-            toExchangeItemView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            toExchangeItemView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            toExchangeItemView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            toCurrencyView.topAnchor.constraint(equalTo: fromCurrencyView.bottomAnchor, constant: 16), // spacing
+            toCurrencyView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            toCurrencyView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            toCurrencyView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
     
     // MARK: - Button Action
     
-    @objc private func buttonTapped() {
+    @objc private func swapButtonTapped() {
         onSwap?()
     }
 }

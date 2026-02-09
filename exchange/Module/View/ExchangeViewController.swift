@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ExchangeViewController: UIViewController {
+final class ExchangeViewController: UIViewController {
     
     // MARK: - UI Components
     
@@ -65,9 +65,12 @@ class ExchangeViewController: UIViewController {
         view.backgroundColor = UIColor(named: "backgroundPrimary")
         view.addSubview(mainStackView)
         
-        // Handle Swap Button tap
         exchangeView.onSwap = { [weak self] in
             self?.handleSwapButtonTap()
+        }
+        
+        exchangeView.showCurrencySheet = { [weak self] in
+            self?.showCurrencySheet()
         }
     }
     
@@ -84,6 +87,10 @@ class ExchangeViewController: UIViewController {
     
     private func handleSwapButtonTap() {
         print("Swap button tapped")
+    }
+    
+    private func showCurrencySheet() {
+        print("Show sheet tapped")
         
         showSheet(title: "Choose currency", content: ContentViewController())
     }
