@@ -65,10 +65,12 @@ final class ExchangeViewController: UIViewController {
         view.backgroundColor = UIColor(named: "backgroundPrimary")
         view.addSubview(mainStackView)
         
+        // Handle Swap Button tap
         exchangeView.onSwap = { [weak self] in
             self?.handleSwapButtonTap()
         }
         
+        // Handle Currency Button tap
         exchangeView.showCurrencySheet = { [weak self] in
             self?.showCurrencySheet()
         }
@@ -92,18 +94,7 @@ final class ExchangeViewController: UIViewController {
     private func showCurrencySheet() {
         print("Show sheet tapped")
         
-        showSheet(title: "Choose currency", content: ContentViewController())
-    }
-}
-
-class ContentViewController: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        view.layer.cornerRadius = 16
-        
-        // TODO: Sheet Content
-        
+        showSheet(title: "Choose currency", content: CurrencyListViewController())
     }
 }
 

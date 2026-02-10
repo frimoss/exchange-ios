@@ -1,5 +1,5 @@
 //
-//  CurrencyInputView.swift
+//  ExchangeInputView.swift
 //  exchange
 //
 //  Created by Nikolai on 05/02/2026.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class CurrencyInputView: UIView {
+final class ExchangeInputView: UIView {
     
     // MARK: - Properties
     

@@ -16,9 +16,9 @@ final class ExchangeView: UIView {
     
     // MARK: - UI Components
     
-    private let fromCurrencyView = CurrencyInputView(currency: "USDc", amount: "9,990.90")
+    private let fromCurrencyView = ExchangeInputView(currency: "USDc", amount: "9,990.90")
     
-    private let toCurrencyView = CurrencyInputView(currency: "MXN", amount: "184,065.59", showButton: true)
+    private let toCurrencyView = ExchangeInputView(currency: "MXN", amount: "184,065.59", showButton: true)
     
     private let swapButton = SwapButton()
     
