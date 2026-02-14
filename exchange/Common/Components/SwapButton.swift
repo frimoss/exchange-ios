@@ -17,8 +17,7 @@ final class SwapButton: UIButton {
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        configure()
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Configuration
