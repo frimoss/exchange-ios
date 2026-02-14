@@ -11,7 +11,7 @@ final class SheetViewController: UIViewController {
     
     // MARK: - UI Components
     
-    private let containerView: UIView = {
+    private lazy var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: "backgroundPrimary")
         view.layer.cornerRadius = 34
@@ -21,7 +21,7 @@ final class SheetViewController: UIViewController {
         return view
     }()
     
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 24, weight: .regular)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -29,7 +29,7 @@ final class SheetViewController: UIViewController {
         return label
     }()
     
-    private let closeButton: UIButton = {
+    private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
         let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
         button.setImage(UIImage(systemName: "xmark", withConfiguration: config), for: .normal)

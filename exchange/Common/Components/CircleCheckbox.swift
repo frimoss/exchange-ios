@@ -19,7 +19,7 @@ final class CircleCheckbox: UIControl {
     
     // MARK: - UI Components
     
-    private let imageView: UIImageView = {
+    private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
