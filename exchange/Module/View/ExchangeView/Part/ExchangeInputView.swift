@@ -95,9 +95,7 @@ final class ExchangeInputView: UIView {
         layer.cornerRadius = 16
         translatesAutoresizingMaskIntoConstraints = false
         
-        addSubview(currencyLabel)
-        addSubview(chooseCurrencyButton)
-        addSubview(amountTextField)
+        addSubviews([currencyLabel, chooseCurrencyButton, amountTextField])
         
         chooseCurrencyButton.addTarget(self, action: #selector(currencyButtonTapped), for: .touchUpInside)
     }

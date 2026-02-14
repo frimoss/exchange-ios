@@ -39,9 +39,7 @@ final class ExchangeView: UIView {
     // MARK: - Setup
     
     private func setupView() {
-        addSubview(fromCurrencyView)
-        addSubview(toCurrencyView)
-        addSubview(swapButton)
+        addSubviews([fromCurrencyView, toCurrencyView, swapButton])
         
         swapButton.addTarget(self, action: #selector(swapButtonTapped), for: .touchUpInside)
         
