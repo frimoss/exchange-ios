@@ -61,10 +61,12 @@ final class CurrencyListViewController: UIViewController {
 extension CurrencyListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         return currencies.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: CurrencyCell.identifier,
             for: indexPath
@@ -81,8 +83,18 @@ extension CurrencyListViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        guard indexPath.row != selectedIndex else { return }
+        
+        let oldIndex = selectedIndex
         selectedIndex = indexPath.row
-        tableView.reloadData()
+        
+        var indexPathsToReload = [indexPath]
+        if let oldRow = oldIndex {
+            indexPathsToReload.append(IndexPath(row: oldRow, section: 0))
+        }
+
+        tableView.reloadRows(at: indexPathsToReload, with: .none)
         
         let selectedCurrency = currencies[indexPath.row]
         print("Selected: \(selectedCurrency)")
