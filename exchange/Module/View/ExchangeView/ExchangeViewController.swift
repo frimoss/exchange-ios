@@ -94,15 +94,18 @@ final class ExchangeViewController: UIViewController {
     private func showCurrencySheet() {
         print("Show sheet tapped")
         
-        showSheet(title: "Choose currency", content: CurrencyListViewController())
+        showSheet(
+            title: "Choose currency",
+            contentViewController: CurrencyListViewController()
+        )
     }
 }
 
 // MARK: - Extension UIViewController -
 
 extension UIViewController {
-    func showSheet(title: String, content: UIViewController) {
-        let sheet = SheetViewController(title: title, content: content)
+    func showSheet(title: String, contentViewController: UIViewController) {
+        let sheet = SheetViewController(title: title, contentViewController: contentViewController)
         present(sheet, animated: true)
     }
 }

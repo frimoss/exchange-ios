@@ -24,6 +24,7 @@ final class SheetViewController: UIViewController {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 24, weight: .regular)
+        label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -34,12 +35,13 @@ final class SheetViewController: UIViewController {
         let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
         button.setImage(UIImage(systemName: "xmark", withConfiguration: config), for: .normal)
         button.tintColor = .secondaryLabel
+        button.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         
         return button
     }()
     
-    private let contentContainer: UIView = {
+    private lazy var contentContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         
@@ -48,14 +50,16 @@ final class SheetViewController: UIViewController {
     
     // MARK: - Properties
     
-    private let contentVC: UIViewController
+    private let contentViewController: UIViewController
+    
+    private let sheetTitle: String
     
     // MARK: - Init
     
-    init(title: String, content: UIViewController) {
-        self.contentVC = content
+    init(title: String, contentViewController: UIViewController) {
+        self.sheetTitle = title
+        self.contentViewController = contentViewController
         super.init(nibName: nil, bundle: nil)
-        self.titleLabel.text = title
     }
     
     required init?(coder: NSCoder) {
@@ -74,44 +78,50 @@ final class SheetViewController: UIViewController {
     // MARK: - Setup
     
     private func setupSheet() {
-        if let sheet = sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
-            sheet.prefersGrabberVisible = true
-            sheet.preferredCornerRadius = 34
-        }
+        guard let sheet = sheetPresentationController else { return }
+        sheet.detents = [.medium(), .large()]
+        sheet.prefersGrabberVisible = true
+        sheet.preferredCornerRadius = 34
     }
     
     private func setupUI() {
         view.backgroundColor = .clear
-        view.addSubview(containerView)
         
+        // Add views
+        view.addSubview(containerView)
         containerView.addSubview(titleLabel)
         containerView.addSubview(closeButton)
         containerView.addSubview(contentContainer)
         
-        // Add VC into Content Container
-        addChild(contentVC)
-        contentContainer.addSubview(contentVC.view)
+        // Configure title
+        titleLabel.text = sheetTitle
         
-        contentVC.view.frame = contentContainer.bounds
-        contentVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        contentVC.didMove(toParent: self)
+        // Embed content view controller
+        embedContentViewController()
+    }
+    
+    private func embedContentViewController() {
+        addChild(contentViewController)
+        contentContainer.addSubview(contentViewController.view)
+        contentViewController.view.translatesAutoresizingMaskIntoConstraints = false
         
-        closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
+        NSLayoutConstraint.activate([
+            contentViewController.view.topAnchor.constraint(equalTo: contentContainer.topAnchor),
+            contentViewController.view.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
+            contentViewController.view.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
+            contentViewController.view.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor)
+        ])
+        
+        contentViewController.didMove(toParent: self)
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            // Main Container
+            // Container View
             containerView.topAnchor.constraint(equalTo: view.topAnchor),
             containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            // Title Label
-            titleLabel.centerYAnchor.constraint(equalTo: closeButton.centerYAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -16),
             
             // Close Button
             closeButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 32),
@@ -119,15 +129,20 @@ final class SheetViewController: UIViewController {
             closeButton.widthAnchor.constraint(equalToConstant: 30),
             closeButton.heightAnchor.constraint(equalToConstant: 30),
             
+            // Title Label
+            titleLabel.centerYAnchor.constraint(equalTo: closeButton.centerYAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -16),
+            
             // Content Container
-            contentContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
+            contentContainer.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 16),
             contentContainer.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
             contentContainer.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
-            contentContainer.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+            contentContainer.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 16)
         ])
     }
     
-    // MARK: - Button Action
+    // MARK: - Actions
     
     @objc private func closeTapped() {
         dismiss(animated: true)
