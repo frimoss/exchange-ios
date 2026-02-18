@@ -18,7 +18,7 @@ struct ExchangeRate: Decodable {
     
     // MARK: - Domain Properties
     
-    var currentPrice: Decimal {
+    var exchangeRate: Decimal {
         return Decimal(string: ask) ?? 0.0
     }
 
