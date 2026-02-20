@@ -23,20 +23,18 @@ struct ExchangeRate: Decodable {
     }
 
     var currencyCode: String {
-        let parts = book.split(separator: "_") // Book: "usdc_mxn"
-        
-        guard parts.count == 2 else { return book }
-        
-        return String(parts[1]).uppercased() // "MXN"
+        // Book "usdc_mxn" -> "MXN"
+        book.components(separatedBy: "_").last?.uppercased() ?? ""
     }
 }
 
-//    API GET: Currencies
-//    [
-//      {
-//        "ask": "18.4105000000",
-//        "bid": "18.4069700000",
-//        "book": "usdc_mxn",
-//        "date": "2025-10-20T20:14:57.361483956"
-//      }
-//    ]
+// MARK: - Mock Tickers Data -
+
+extension ExchangeRate {
+    static var mockRates: [ExchangeRate] = [
+        ExchangeRate(ask: "1466.4900", bid: "1462.8138", book: "usdc_ars", date: ""),
+        ExchangeRate(ask: "3720.9410", bid: "3680.6000", book: "usdc_cop", date: ""),
+        ExchangeRate(ask: "17.1703", bid: "17.1671", book: "usdc_mxn", date: ""),
+        ExchangeRate(ask: "5.2589", bid: "5.2065", book: "usdc_brl", date: "")
+    ]
+}
