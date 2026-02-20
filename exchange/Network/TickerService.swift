@@ -23,22 +23,23 @@ final class TickerService {
     
     private func fetchTickers(currencies: [String]) async throws -> [ExchangeRate] {
         
-        let joined = currencies.joined(separator: ",") // API Param String: "ARS,COP,MXN,BRL"
+        // Same cache Key for same Currencies ["ARS", "COP"] == ["COP", "ARS"]
+        let sorted = currencies.sorted()
+        
+        let cacheKey = sorted.joined(separator: ",") // Key String: "ARS,COP,MXN,BRL"
         
         // Return Tickers from Cache if exist
-        if let cached = cache[joined] {
+        if let cached = cache[cacheKey] {
             print("Get Tickers from Cache")
             
             return cached
         }
         
-        let urlString = "\(baseURL)/tickers?currencies=\(joined)"
-        
         // Fetch Tickers
-        let rates: [ExchangeRate] = try await client.request(urlString)
+        let rates: [ExchangeRate] = try await client.request(TickerEndpoint.tickers(sorted))
         
         // Save in Cache
-        cache[joined] = rates
+        cache[cacheKey] = rates
         print("Rates were Saved in Cache")
         
         return rates
