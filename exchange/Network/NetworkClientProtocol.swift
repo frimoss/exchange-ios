@@ -8,5 +8,5 @@
 import Foundation
 
 protocol NetworkClientProtocol {
-    func request<T: Decodable>(_ urlString: String) async throws -> T
+    func request<T: Decodable>(_ endpoint: TickerEndpoint) async throws -> T
 }
