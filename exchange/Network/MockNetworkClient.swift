@@ -1,5 +1,5 @@
 //
-//  MockDataProvider.swift
+//  MockNetworkClient.swift
 //  exchange
 //
 //  Created by Nikolai on 20/02/2026.
