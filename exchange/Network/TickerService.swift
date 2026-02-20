@@ -10,13 +10,12 @@ import Foundation
 final class TickerService {
     
     private let client: NetworkClientProtocol
-    private let baseURL = "BASE_URL"
     
     private var cache: [String: [ExchangeRate]] = [:]
     
     // MARK: - Init
     
-    init(client: NetworkClientProtocol) {
+    init(client: NetworkClientProtocol = NetworkClient()) {
         self.client = client
     }
     

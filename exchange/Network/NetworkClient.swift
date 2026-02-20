@@ -9,18 +9,24 @@ import Foundation
 
 final class NetworkClient: NetworkClientProtocol {
     
+    private let baseURL: String
     private let session: URLSession
     
-    init(session: URLSession = .shared) {
+    init(baseURL: String = AppConfig.API.baseURL, session: URLSession = .shared) {
+        self.baseURL = baseURL
         self.session = session
     }
     
     // MARK: - Request Method
     
-    func request<T: Decodable>(_ urlString: String) async throws -> T {
+    func request<T: Decodable>(_ endpoint: TickerEndpoint) async throws -> T {
+        
+        // Create URL with Query Items
+        var components = URLComponents(string: baseURL + endpoint.path)
+        components?.queryItems = endpoint.queryItems
         
         // Check URL
-        guard let url = URL(string: urlString) else {
+        guard let url = components?.url else {
             throw NetworkError.invalidURL
         }
         
