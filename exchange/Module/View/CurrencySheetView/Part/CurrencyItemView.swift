@@ -101,9 +101,9 @@ final class CurrencyItemView: UIView {
     
     // MARK: - Configuration
     
-    func configure(currency: String, isSelected: Bool) {
-        currencyLabel.text = currency
-        imageView.image = UIImage(named: currency)
+    func configure(currency: Currency, isSelected: Bool) {
+        currencyLabel.text = currency.code
+        imageView.image = UIImage(named: currency.imageName)
         checkbox.isChecked = isSelected
     }
 }

@@ -10,7 +10,7 @@ import UIKit
 final class CurrencyListViewController: UIViewController {
     
     // Mock Data
-    private let currencies = ["ARS", "EURc", "COP", "MXN", "BRL", "ARS", "EURc", "COP", "MXN", "BRL", "ARS", "EURc", "COP", "MXN", "BRL"]
+    private let currencies = Currency.mockCurrencies
     
     // MARK: - UI Components
     
