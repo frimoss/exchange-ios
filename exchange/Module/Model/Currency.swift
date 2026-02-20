@@ -21,20 +21,14 @@ struct Currency: Decodable {
 // MARK: - Mock Currencies Data -
 
 extension Currency {
-    static var mockCurrencies: [Currency] {
-        [
-            Currency(code: "ARS"),
-            Currency(code: "COP"),
-            Currency(code: "MXN"),
-            Currency(code: "BRL")
-        ]
-    }
+    // Fixed USD to MXN (by default)
+    static let usd = Currency(code: "USD")
+    static let mxn = Currency(code: "MXN")
+    
+    static var mockCurrencies: [Currency] = [
+        Currency(code: "ARS"),
+        Currency(code: "COP"),
+        Currency(code: "MXN"),
+        Currency(code: "BRL")
+    ]
 }
-
-//    API GET: Tickers
-//    [
-//      "MXN",
-//      "ARS",
-//      "BRL",
-//      "COP"
-//    ]
