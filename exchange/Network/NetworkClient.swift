@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class NetworkClient {
+final class NetworkClient: NetworkClientProtocol {
     
     private let session: URLSession
     
