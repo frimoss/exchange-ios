@@ -47,8 +47,8 @@ final class TickerService {
     
     // MARK: - Public Get Currencies
     
-    func fetchAvailableCurrencies() async -> [Currency] {
-        // TODO: Fix return try await client.request("\(baseURL)/tickers-currencies")
+    func fetchAvailableCurrencies() async throws -> [Currency] {
+        // TODO: Fix return try await client.request(TickerEndpoint.currencies)
         
         print("Using Mock Currencies")
         return Currency.mockCurrencies
