@@ -48,7 +48,7 @@ final class CurrencyCell: UITableViewCell {
     
     // MARK: - Configuration
     
-    func configure(currency: String, isSelected: Bool) {
+    func configure(currency: Currency, isSelected: Bool) {
         currencyItemView.configure(currency: currency, isSelected: isSelected)
     }
 }
