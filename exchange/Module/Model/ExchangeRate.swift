@@ -11,10 +11,10 @@ struct ExchangeRate: Decodable {
     
     // MARK: - API Properties
     
-    private let ask: String   // Buying price
-    private let bid: String   // Selling price
-    private let book: String  // Currency pair: "usdc_mxn"
-    private let date: String
+    let ask: String   // Buying price
+    let bid: String   // Selling price
+    let book: String  // Currency pair: "usdc_mxn"
+    let date: String
     
     // MARK: - Domain Properties
     
