@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum TickerEndpoint {
+enum TickerEndpoint: Endpoint {
     
     case currencies
     case tickers([String])

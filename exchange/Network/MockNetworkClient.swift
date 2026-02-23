@@ -11,11 +11,14 @@ final class MockNetworkClient: NetworkClientProtocol {
     
     // MARK: - Mock Request Method
     
-    func request<T: Decodable>(_ endpoint: TickerEndpoint) async throws -> T {
+    func request<T: Decodable, E: Endpoint>(_ endpoint: E) async throws -> T {
         
-        let filename = mockFilename(for: endpoint)
-        
-        guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else { throw NetworkError.invalidURL
+        // Check Filename.JSON in the Project for MOCK Tests
+        guard
+            let filename = mockFilename(for: endpoint),
+            let url = Bundle.main.url(forResource: filename, withExtension: "json")
+        else {
+            throw NetworkError.invalidURL
         }
         
         let data = try Data(contentsOf: url)
@@ -27,9 +30,11 @@ final class MockNetworkClient: NetworkClientProtocol {
     
     // MARK: - Filenames of Mock JSON Files
     
-    private func mockFilename(for endpoint: TickerEndpoint) -> String {
+    private func mockFilename<E: Endpoint>(for endpoint: E) -> String? {
         
-        switch endpoint {
+        guard let tickerEndpoint = endpoint as? TickerEndpoint else { return nil }
+        
+        switch tickerEndpoint {
         case .currencies:   return "currencies"
         case .tickers:      return "exchange_rate"
         }

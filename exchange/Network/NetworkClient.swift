@@ -19,7 +19,7 @@ final class NetworkClient: NetworkClientProtocol {
     
     // MARK: - Request Method
     
-    func request<T: Decodable>(_ endpoint: TickerEndpoint) async throws -> T {
+    func request<T: Decodable, E: Endpoint>(_ endpoint: E) async throws -> T {
         
         // Create URL with Query Items
         var components = URLComponents(string: baseURL + endpoint.path)
