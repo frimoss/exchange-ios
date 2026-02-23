@@ -7,7 +7,16 @@
 
 import Foundation
 
-final class TickerService {
+protocol TickerServiceProtocol {
+    
+    func fetchTickers(currencies: [String]) async throws -> [ExchangeRate]
+    
+    func fetchAvailableCurrencies() async throws -> [Currency]
+    
+    func fetchTickersWithFallback(currencies: [String]) async -> [ExchangeRate]
+}
+
+final class TickerService: TickerServiceProtocol {
     
     private let client: NetworkClientProtocol
     
@@ -21,7 +30,7 @@ final class TickerService {
     
     // MARK: - Private Get Tickers
     
-    private func fetchTickers(currencies: [String]) async throws -> [ExchangeRate] {
+    func fetchTickers(currencies: [String]) async throws -> [ExchangeRate] {
         
         // Same cache Key for same Currencies ["ARS", "COP"] == ["COP", "ARS"]
         let sorted = currencies.sorted()
