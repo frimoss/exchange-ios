@@ -7,42 +7,45 @@
 
 import Foundation
 
-enum ActiveField {
-    case top
-    case bottom
-}
-
-enum ConversionDirection {
-    case usdToSelected // USD to MXN
-    case selectedToUsd // MXN to USD
-}
-
 struct ExchangeViewState {
     
-    // MARK: - Store Data
+    // MARK: - Enums
+    
+    enum Status {
+        case isLoading
+        case error(String)
+        case loaded([Currency])
+    }
+
+    enum ActiveField {
+        case top
+        case bottom
+    }
+
+    enum ConversionDirection {
+        case usdToSelected // USD to MXN
+        case selectedToUsd // MXN to USD
+    }
+    
+    // MARK: - Status
+    
+    var status: Status = .isLoading
+    
+    // MARK: - Data
     
     var currencies: [Currency] = [] // Sheet Available Currencies
     var rates: [String: Decimal] = [:] // All Available Rates ["MXN": 17.17, "ARS": 1466.49]
 
-    // MARK: - Selected Currency
+    // MARK: - Selection
     
     var selectedCurrency: Currency = .mxn // USD to MXN (by default)
+    var direction: ConversionDirection = .usdToSelected // Change by SWAP Button
     
-    // MARK: - Input Fields
+    // MARK: - Input
     
     var topAmount = "1" // $1 (by default)
     var bottomAmount = ""
-    
     var activeField: ActiveField = .top
-    
-    // MARK: - Conversion Direction
-    
-    var direction: ConversionDirection = .usdToSelected // Change by SWAP Button
-    
-    // MARK: - State
-    
-    var isLoading: Bool = false
-    var errorMessage: String?
     
     // MARK: - Computed Properties
     
