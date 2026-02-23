@@ -11,10 +11,18 @@ final class NetworkClient: NetworkClientProtocol {
     
     private let baseURL: String
     private let session: URLSession
+    private let decoder: JSONDecoder
     
-    init(baseURL: String = AppConfig.API.baseURL, session: URLSession = .shared) {
+    // MARK: - Init
+    
+    init(
+        baseURL: String = AppConfig.API.baseURL,
+        session: URLSession = .shared,
+        decoder: JSONDecoder = JSONDecoder()
+    ) {
         self.baseURL = baseURL
         self.session = session
+        self.decoder = decoder
     }
     
     // MARK: - Request Method
@@ -48,7 +56,7 @@ final class NetworkClient: NetworkClientProtocol {
         
         // Try Decode Data
         do {
-            return try JSONDecoder().decode(T.self, from: data)
+            return try decoder.decode(T.self, from: data)
         } catch {
             throw NetworkError.decodingFailed
         }

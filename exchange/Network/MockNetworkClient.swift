@@ -9,6 +9,14 @@ import Foundation
 
 final class MockNetworkClient: NetworkClientProtocol {
     
+    private let decoder: JSONDecoder
+    
+    // MARK: - Init
+    
+    init(decoder: JSONDecoder = JSONDecoder()) {
+        self.decoder = decoder
+    }
+    
     // MARK: - Mock Request Method
     
     func request<T: Decodable, E: Endpoint>(_ endpoint: E) async throws -> T {
@@ -25,7 +33,7 @@ final class MockNetworkClient: NetworkClientProtocol {
         
         print("Using Mock NetworkClient for path: \(endpoint.path) (\(filename).json)")
         
-        return try JSONDecoder().decode(T.self, from: data)
+        return try decoder.decode(T.self, from: data)
     }
     
     // MARK: - Filenames of Mock JSON Files
