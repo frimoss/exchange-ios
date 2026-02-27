@@ -8,15 +8,12 @@
 import Foundation
 
 @MainActor
+@Observable
 final class ExchangeViewModel {
     
     // MARK: - State
     
-    private(set) var state = ExchangeViewState() {
-        didSet { onStateChanged?(state) }
-    }
-    
-    var onStateChanged: ((ExchangeViewState) -> Void)? // Closure
+    var state = ExchangeViewState()
     
     // MARK: - Dependencies
     

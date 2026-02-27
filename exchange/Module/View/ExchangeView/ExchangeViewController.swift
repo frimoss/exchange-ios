@@ -61,16 +61,27 @@ final class ExchangeViewController: UIViewController {
         super.viewDidLoad()
         setupView()
         setupConstraints()
-        setupBindings()
+        setupObservation()
         setupActions()
         viewModel.loadInitialData()
     }
     
-    // MARK: - Bindings
+    // MARK: - Observation
     
-    private func setupBindings() {
-        viewModel.onStateChanged = { [weak self] state in
-            self?.render(state)
+    private func setupObservation() {
+        
+        withObservationTracking {
+            // Call Render VC by State
+            render(viewModel.state)
+            
+        } onChange: { [weak self] in
+            
+            // Safe: Put in the Main Thread
+            Task { @MainActor [weak self] in
+                
+                // Run SetupObservation() again
+                self?.setupObservation()
+            }
         }
     }
     
