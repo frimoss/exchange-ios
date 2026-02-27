@@ -130,12 +130,12 @@ final class ExchangeViewModel {
         // Check User's Input
         guard !text.isEmpty else { return "" }
         
-        // Decimal Accepts only Number with dot: 1,5 -> 1.5
-        let normalized = text.replacingOccurrences(of: ",", with: ".")
+        // Delete all spaces from Input
+        let cleanText = text.components(separatedBy: .whitespaces).joined()
         
         // Check Amount & Exchange Rate
         guard
-            let amount = Decimal(string: normalized),
+            let amount = Decimal(string: cleanText, locale: .current),
             amount > 0,
             let rate = state.exchangeRate,
             rate > 0
