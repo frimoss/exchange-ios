@@ -9,15 +9,18 @@ import UIKit
 
 final class ExchangeInputView: UIView {
     
-    // MARK: - Properties
+    // MARK: - Public
     
     var onCurrencyTap: (() -> Void)?
+    
+    // MARK: - Private Properties
+    
+    private var textChangeHandler: ((String) -> Void)?
 
     // MARK: - UI Components
     
     private let currencyLabel: UILabel = {
         let label = UILabel()
-        label.text = "USDc"
         label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.textColor = UIColor(named: "textPrimary")
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -42,16 +45,6 @@ final class ExchangeInputView: UIView {
         textField.borderStyle = .none
         //textField.backgroundColor = .clear
         
-        // Dollar Currency
-        let dollarLabel = UILabel()
-        dollarLabel.text = "$"
-        dollarLabel.font = .systemFont(ofSize: 16, weight: .bold)
-        dollarLabel.textColor = UIColor(named: "textPrimary")
-        dollarLabel.sizeToFit()
-        
-        textField.leftView = dollarLabel
-        textField.leftViewMode = .always
-        
         textField.translatesAutoresizingMaskIntoConstraints = false
             
         return textField
@@ -70,18 +63,11 @@ final class ExchangeInputView: UIView {
     
     // MARK: - Init
     
-    init(currency: String = "USDc", amount: String, showButton: Bool = false) {
-        super.init(frame: .zero)
-        
-        // Properties
-        currencyLabel.text = currency
-        amountTextField.text = amount
-        
-        // UI
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         setupView()
         setupConstraints()
-        
-        chooseCurrencyButton.isHidden = !showButton
+        setupActions()
     }
     
     required init?(coder: NSCoder) {
@@ -96,8 +82,12 @@ final class ExchangeInputView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
         
         addSubviews([currencyLabel, chooseCurrencyButton, amountTextField])
-        
+    }
+    
+    private func setupActions() {
         chooseCurrencyButton.addTarget(self, action: #selector(currencyButtonTapped), for: .touchUpInside)
+        
+        amountTextField.addTarget(self, action: #selector(handleEditingChanged), for: .editingChanged)
     }
     
     private func setupConstraints() {
@@ -119,16 +109,39 @@ final class ExchangeInputView: UIView {
         ])
     }
     
-    // MARK: - Public Methods
-    
-    func configure(currency: String, amount: String) {
-        currencyLabel.text = currency
-        amountTextField.text = amount
+    // MARK: - Configuration
+        
+    func configure(with config: Configuration) {
+        
+        currencyLabel.text = config.currencyCode
+        chooseCurrencyButton.isHidden = !config.isCurrencySelectionEnabled
+        
+        self.textChangeHandler = config.onAmountChanged
+        
+        // Update Amount only if changed
+        if amountTextField.text != config.amount {
+            amountTextField.text = config.amount
+        }
     }
     
     // MARK: - Button Action
     
     @objc private func currencyButtonTapped() {
         onCurrencyTap?()
+    }
+    
+    @objc private func handleEditingChanged() {
+        textChangeHandler?(amountTextField.text ?? "")
+    }
+}
+
+// MARK: - ExchangeInputView Configuration -
+
+extension ExchangeInputView {
+    struct Configuration {
+        let currencyCode: String
+        let amount: String
+        let isCurrencySelectionEnabled: Bool
+        let onAmountChanged: (String) -> Void
     }
 }
