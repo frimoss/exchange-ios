@@ -25,7 +25,7 @@ final class SwapButton: UIButton {
     private func configure() {
         setImage(UIImage(systemName: "arrow.down.circle.fill"), for: .normal)
         tintColor = UIColor(named: "accentGreen")
-        backgroundColor = .white
+        backgroundColor = UIColor(named: "backgroundSecondary")
         translatesAutoresizingMaskIntoConstraints = false
         
         // Icon Size

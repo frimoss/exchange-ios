@@ -59,7 +59,7 @@ final class CircleCheckbox: UIControl {
     private func updateAppearance() {
         let imageName = isChecked ? "checkmark.circle.fill" : "circle"
         imageView.image = UIImage(systemName: imageName)
-        imageView.tintColor = isChecked ? .systemGreen : .systemGray3
+        imageView.tintColor = isChecked ? .systemGreen : .systemGray2
     }
     
     // MARK: - Button Action

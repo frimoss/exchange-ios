@@ -14,7 +14,7 @@ final class CurrencyItemView: UIView {
     // Flag Image
     let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "backgroundSecondary")
+        view.backgroundColor = .systemGray6
         view.layer.cornerRadius = 10
         view.translatesAutoresizingMaskIntoConstraints = false
         

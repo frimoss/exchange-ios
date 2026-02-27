@@ -43,7 +43,7 @@ final class ExchangeInputView: UIView {
         
         // TextField Style
         textField.borderStyle = .none
-        //textField.backgroundColor = .clear
+        textField.backgroundColor = .clear
         
         textField.translatesAutoresizingMaskIntoConstraints = false
             
@@ -77,7 +77,7 @@ final class ExchangeInputView: UIView {
     // MARK: - Setup
     
     private func setupView() {
-        backgroundColor = .white
+        backgroundColor = UIColor(named: "backgroundSecondary")
         layer.cornerRadius = 16
         translatesAutoresizingMaskIntoConstraints = false
         
