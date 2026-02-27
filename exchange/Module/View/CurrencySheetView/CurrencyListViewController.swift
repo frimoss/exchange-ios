@@ -9,12 +9,13 @@ import UIKit
 
 final class CurrencyListViewController: UIViewController {
     
-    // Mock Data
-    private let currencies = Currency.mockCurrencies
+    // MARK: - Private Properties
+    
+    private let currencies: [Currency]
+    private var selectedIndex: Int?
+    private let selectionHandler: (Currency) -> Void
     
     // MARK: - UI Components
-    
-    private var selectedIndex: Int? = 0
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -30,6 +31,19 @@ final class CurrencyListViewController: UIViewController {
         
         return tableView
     }()
+    
+    // MARK: - Init
+    
+    init(currencies: [Currency], selectedCurrency: Currency, onSelect: @escaping (Currency) -> Void) {
+        self.currencies = currencies
+        self.selectedIndex = currencies.firstIndex(where: { $0.code == selectedCurrency.code })
+        self.selectionHandler = onSelect
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Lifecycle
     
@@ -75,6 +89,7 @@ extension CurrencyListViewController: UITableViewDelegate, UITableViewDataSource
         }
         
         let currency = currencies[indexPath.row]
+        
         let isSelected = selectedIndex == indexPath.row
         
         cell.configure(currency: currency, isSelected: isSelected)
@@ -86,17 +101,26 @@ extension CurrencyListViewController: UITableViewDelegate, UITableViewDataSource
         
         guard indexPath.row != selectedIndex else { return }
         
+        // Check Selected Index
         let oldIndex = selectedIndex
         selectedIndex = indexPath.row
         
+        // Reload Rows
         var indexPathsToReload = [indexPath]
+        
         if let oldRow = oldIndex {
             indexPathsToReload.append(IndexPath(row: oldRow, section: 0))
         }
 
         tableView.reloadRows(at: indexPathsToReload, with: .none)
         
+        // User Selection
         let selectedCurrency = currencies[indexPath.row]
-        print("Selected: \(selectedCurrency)")
+        
+        // Handle Selection
+        selectionHandler(selectedCurrency)
+        
+        // Close Sheet
+        dismiss(animated: true)
     }
 }
