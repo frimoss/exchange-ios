@@ -37,17 +37,25 @@ final class ExchangeViewModel {
                 let codes = currencies.map { $0.code } // [Currency] -> [String]
                 let exchangeRates = await service.fetchTickersWithFallback(currencies: codes)
                 
+                // Create new State
+                var newState = state
+                
                 // Convert to Dictionary Rates [currencyCode: exchangeRate]
-                state.rates = exchangeRates.reduce(into: [:]) { dict, rate in
+                newState.rates = exchangeRates.reduce(into: [:]) { dict, rate in
                     dict[rate.currencyCode] = rate.exchangeRate
                 }
                 
                 // State
-                state.currencies = currencies
+                newState.currencies = currencies
                 
-                recalculate() // Calculate bottom Amount (by default)
+                // Calculate bottom Amount (by default)
+                let calculated = calculateOpposite(from: newState.topAmount, state: newState, sourceIsTop: true)
+                newState.bottomAmount = calculated
                 
-                state.status = .loaded(currencies)
+                newState.status = .loaded(currencies)
+                
+                // Update State - 1 Time
+                self.state = newState
                 
             } catch {
                 state.status = .error("Failed to sync Rates")
@@ -58,39 +66,69 @@ final class ExchangeViewModel {
     // MARK: - User Actions
     
     func topAmountChanged(_ text: String) {
-        state.activeField = .top
-        state.topAmount = text
-        state.bottomAmount = calculateOpposite(from: text, sourceIsTop: true)
+        var newState = state
+        
+        newState.activeField = .top
+        newState.topAmount = text
+        newState.bottomAmount = calculateOpposite(from: text, state: newState, sourceIsTop: true)
+        
+        self.state = newState
     }
     
     func bottomAmountChanged(_ text: String) {
-        state.activeField = .bottom
-        state.bottomAmount = text
-        state.topAmount = calculateOpposite(from: text, sourceIsTop: false)
+        var newState = state
+        
+        newState.activeField = .bottom
+        newState.bottomAmount = text
+        newState.topAmount = calculateOpposite(from: text, state: newState, sourceIsTop: false)
+        
+        self.state = newState
     }
     
     func swapTapped() {
-        state.direction = (state.direction == .usdToSelected) ? .selectedToUsd : .usdToSelected
-        recalculate()
+        var newState = state
+        
+        newState.direction = (state.direction == .usdToSelected) ? .selectedToUsd : .usdToSelected
+        
+        // Recalculate
+        let (updatedTop, updatedBottom) = recalculate(for: newState)
+        newState.topAmount = updatedTop
+        newState.bottomAmount = updatedBottom
+        
+        self.state = newState
     }
     
     func currencySelected(_ currency: Currency) {
-        state.selectedCurrency = currency
-        recalculate()
+        var newState = state
+        
+        newState.selectedCurrency = currency
+        
+        // Recalculate
+        let (updatedTop, updatedBottom) = recalculate(for: newState)
+        newState.topAmount = updatedTop
+        newState.bottomAmount = updatedBottom
+        
+        self.state = newState
     }
     
     // MARK: - Private Calculations -
     
-    private func recalculate() {
+    private func recalculate(for targetState: ExchangeViewState) -> (top: String, bottom: String) {
+        
+        var top = targetState.topAmount
+        var bottom = targetState.bottomAmount
+        
         switch state.activeField {
         case .top:
-            state.bottomAmount = calculateOpposite(from: state.topAmount, sourceIsTop: true)
+            bottom = calculateOpposite(from: targetState.topAmount, state: targetState, sourceIsTop: true)
         case .bottom:
-            state.topAmount = calculateOpposite(from: state.bottomAmount, sourceIsTop: false)
+            top = calculateOpposite(from: targetState.bottomAmount, state: targetState, sourceIsTop: false)
         }
+        
+        return (top, bottom)
     }
     
-    private func calculateOpposite(from text: String, sourceIsTop: Bool) -> String {
+    private func calculateOpposite(from text: String, state: ExchangeViewState, sourceIsTop: Bool) -> String {
         
         // Check User's Input
         guard !text.isEmpty else { return "" }
