@@ -9,6 +9,10 @@ import UIKit
 
 final class ExchangeViewController: UIViewController {
     
+    // MARK: - ViewModel
+    
+    private let viewModel = ExchangeViewModel()
+    
     // MARK: - UI Components
     
     private let titleLabel: UILabel = {
@@ -24,7 +28,7 @@ final class ExchangeViewController: UIViewController {
     
     private let exchangeRateLabel: UILabel = {
         let label = UILabel()
-        label.text = "1 USDc = 18.4097 MXN"
+        label.text = "1 USDc = 17.17 MXN"
         label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.textColor = UIColor(named: "accentGreen")
         label.numberOfLines = 0
@@ -57,6 +61,75 @@ final class ExchangeViewController: UIViewController {
         super.viewDidLoad()
         setupView()
         setupConstraints()
+        setupBindings()
+        setupActions()
+        viewModel.loadInitialData()
+    }
+    
+    // MARK: - Bindings
+    
+    private func setupBindings() {
+        viewModel.onStateChanged = { [weak self] state in
+            self?.render(state)
+        }
+    }
+    
+    // MARK: - Render
+    
+    private func render(_ state: ExchangeViewState) {
+        
+        // Check State
+        switch state.status {
+        case .isLoading:
+            // TODO: isLoading - show loader?
+            print("Status - Loading...")
+            
+        case .error(let message):
+            // TODO: error - add alert
+            print("Status - Error: \(message)")
+        
+        case .loaded(let currencies):
+            // TODO: currencies?
+            print("Status: .loaded")
+        }
+        
+        // Update Exchange Rate Label
+        if let currentRate = state.exchangeRate?.toCurrency() {
+            
+            let currentCode = state.selectedCurrency.code.uppercased()
+            
+            exchangeRateLabel.text = "1 USDc = \(currentRate) \(currentCode)"
+        }
+        
+        // MARK: - Configure Input Fields
+        
+        let topInputConfig = ExchangeInputView.Configuration(
+            currencyCode: state.topCurrency.code,
+            amount: state.topAmount,
+            isCurrencySelectionEnabled: state.direction == .selectedToUsd,
+            onAmountChanged: { [weak self] newText in
+                
+                self?.viewModel.topAmountChanged(newText)
+            }
+        )
+        
+        let bottomInputConfig = ExchangeInputView.Configuration(
+            currencyCode: state.bottomCurrency.code,
+            amount: state.bottomAmount,
+            isCurrencySelectionEnabled: state.direction == .usdToSelected,
+            onAmountChanged: { [weak self] newText in
+                
+                self?.viewModel.bottomAmountChanged(newText)
+            }
+        )
+        
+        // Update Exchange Inputs
+        let viewConfig = ExchangeView.Configuration(
+            topConfig: topInputConfig,
+            bottomConfig: bottomInputConfig
+        )
+        
+        exchangeView.configure(with: viewConfig)
     }
     
     // MARK: - Setup
@@ -64,15 +137,18 @@ final class ExchangeViewController: UIViewController {
     private func setupView() {
         view.backgroundColor = UIColor(named: "backgroundPrimary")
         view.addSubview(mainStackView)
+    }
+    
+    private func setupActions() {
         
-        // Handle Swap Button tap
-        exchangeView.onSwap = { [weak self] in
-            self?.handleSwapButtonTap()
+        // Handle Swap Button Tap
+        exchangeView.onSwapTap = { [weak self] in
+            self?.viewModel.swapTapped()
         }
         
-        // Handle Currency Button tap
-        exchangeView.showCurrencySheet = { [weak self] in
-            self?.showCurrencySheet()
+        // Handle Currency Button Tap
+        exchangeView.onCurrencySelect = { [weak self] input in
+            self?.presentCurrencyList()
         }
     }
     
@@ -87,23 +163,24 @@ final class ExchangeViewController: UIViewController {
     
     // MARK: - Button Action
     
-    private func handleSwapButtonTap() {
-        print("Swap button tapped")
-    }
-    
-    private func showCurrencySheet() {
-        print("Show sheet tapped")
+    private func presentCurrencyList() {
         
-        showSheet(
-            title: "Choose currency",
-            contentViewController: CurrencyListViewController()
+        let listVC = CurrencyListViewController(
+            currencies: viewModel.state.currencies,
+            selectedCurrency: viewModel.state.selectedCurrency,
+            onSelect: { [weak self] currency in
+                self?.viewModel.currencySelected(currency)
+            }
         )
+        
+        self.showSheet(title: "Choose currency", contentViewController: listVC)
     }
 }
 
 // MARK: - Extension UIViewController -
 
 extension UIViewController {
+    
     func showSheet(title: String, contentViewController: UIViewController) {
         let sheet = SheetViewController(title: title, contentViewController: contentViewController)
         present(sheet, animated: true)
