@@ -19,6 +19,14 @@ final class ExchangeInputView: UIView {
 
     // MARK: - UI Components
     
+    private let countryImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return imageView
+    }()
+    
     private let currencyLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .semibold)
@@ -81,7 +89,7 @@ final class ExchangeInputView: UIView {
         layer.cornerRadius = 16
         translatesAutoresizingMaskIntoConstraints = false
         
-        addSubviews([currencyLabel, chooseCurrencyButton, amountTextField])
+        addSubviews([countryImageView, currencyLabel, chooseCurrencyButton, amountTextField])
     }
     
     private func setupActions() {
@@ -95,9 +103,15 @@ final class ExchangeInputView: UIView {
             // Height constraint
             heightAnchor.constraint(equalToConstant: 66),
             
+            // Country Flag Image View
+            countryImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            countryImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            countryImageView.widthAnchor.constraint(equalToConstant: 20),
+            countryImageView.heightAnchor.constraint(equalToConstant: 20),
+            
             // Currency Label
-            currencyLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             currencyLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            currencyLabel.leadingAnchor.constraint(equalTo: countryImageView.trailingAnchor, constant: 8),
             
             chooseCurrencyButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             chooseCurrencyButton.leadingAnchor.constraint(equalTo: currencyLabel.trailingAnchor, constant: 8),
@@ -114,6 +128,7 @@ final class ExchangeInputView: UIView {
     func configure(with config: Configuration) {
         
         currencyLabel.text = config.currencyCode
+        countryImageView.image = UIImage(named: config.currencyCode)
         chooseCurrencyButton.isHidden = !config.isCurrencySelectionEnabled
         
         self.textChangeHandler = config.onAmountChanged
