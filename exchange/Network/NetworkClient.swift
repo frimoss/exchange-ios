@@ -13,6 +13,8 @@ protocol NetworkClientProtocol {
 
 final class NetworkClient: NetworkClientProtocol {
     
+    // MARK: - Dependencies
+    
     private let baseURL: String
     private let session: URLSession
     private let decoder: JSONDecoder

@@ -9,9 +9,9 @@ import UIKit
 
 final class ExchangeViewController: UIViewController {
     
-    // MARK: - ViewModel
+    // MARK: - Dependencies
     
-    private let viewModel = ExchangeViewModel()
+    private let viewModel: ExchangeViewModel
     
     // MARK: - UI Components
     
@@ -54,6 +54,17 @@ final class ExchangeViewController: UIViewController {
         
         return stackView
     }()
+    
+    // MARK: - Init
+    
+    init(viewModel: ExchangeViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - Lifecycle
     
