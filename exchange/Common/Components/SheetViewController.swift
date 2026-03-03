@@ -23,7 +23,7 @@ final class SheetViewController: UIViewController {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = AppStyle.Color.textPrimary
-        label.font = AppStyle.Typography.title()
+        label.font = AppStyle.Typography.title
         label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
         

@@ -40,17 +40,17 @@ enum AppStyle {
     enum Typography {
         
         /// Dynamic Type: Size: 30, Weight: .bold
-        static func header() -> UIFont {
+        static var header: UIFont {
             customFont(size: 30, weight: .bold, textStyle: .largeTitle)
         }
         
         /// Dynamic Type: Size: 24, Weight: .regular
-        static func title() -> UIFont {
+        static var title: UIFont {
             customFont(size: 24, weight: .regular, textStyle: .title1)
         }
         
         /// Dynamic Type: Size: 16, Weight: .semibold
-        static func body() -> UIFont {
+        static var body: UIFont {
             customFont(size: 16, weight: .semibold, textStyle: .body)
         }
         
