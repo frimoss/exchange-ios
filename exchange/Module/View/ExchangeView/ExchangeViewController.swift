@@ -18,7 +18,7 @@ final class ExchangeViewController: UIViewController {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Exchange calculator"
-        label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.font = AppStyle.Typography.header()
         label.textColor = AppStyle.Color.textPrimary
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -29,7 +29,7 @@ final class ExchangeViewController: UIViewController {
     private let exchangeRateLabel: UILabel = {
         let label = UILabel()
         label.text = "1 USDc = 17.17 MXN"
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.font = AppStyle.Typography.body()
         label.textColor = AppStyle.Color.accent
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false

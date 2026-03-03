@@ -21,7 +21,7 @@ final class ExchangeInputView: UIView {
     
     private let currencyLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.font = AppStyle.Typography.body()
         label.textColor = AppStyle.Color.textPrimary
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -31,7 +31,7 @@ final class ExchangeInputView: UIView {
     private let amountTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "0"
-        textField.font = .systemFont(ofSize: 16, weight: .bold)
+        textField.font = AppStyle.Typography.body()
         textField.textColor = AppStyle.Color.textPrimary
         
         // Keyboard

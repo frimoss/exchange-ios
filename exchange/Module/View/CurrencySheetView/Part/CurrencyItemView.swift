@@ -33,7 +33,7 @@ final class CurrencyItemView: UIView {
     private let currencyLabel: UILabel = {
         let label = UILabel()
         label.text = "ARS"
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.font = AppStyle.Typography.body()
         label.textColor = AppStyle.Color.textPrimary
         label.translatesAutoresizingMaskIntoConstraints = false
         
