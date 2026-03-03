@@ -22,7 +22,7 @@ final class ExchangeInputView: UIView {
     private let currencyLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.textColor = UIColor(named: "textPrimary")
+        label.textColor = AppStyle.Color.textPrimary
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -32,7 +32,7 @@ final class ExchangeInputView: UIView {
         let textField = UITextField()
         textField.placeholder = "0"
         textField.font = .systemFont(ofSize: 16, weight: .bold)
-        textField.textColor = UIColor(named: "textPrimary")
+        textField.textColor = AppStyle.Color.textPrimary
         
         // Keyboard
         textField.keyboardType = .decimalPad
@@ -54,7 +54,7 @@ final class ExchangeInputView: UIView {
         let button = UIButton()
         let configuration = UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold)
         button.setImage(UIImage(systemName: "chevron.down", withConfiguration: configuration), for: .normal)
-        button.tintColor = UIColor(named: "textPrimary")
+        button.tintColor = AppStyle.Color.textPrimary
         button.isHidden = true
         button.translatesAutoresizingMaskIntoConstraints = false
         
@@ -77,7 +77,7 @@ final class ExchangeInputView: UIView {
     // MARK: - Setup
     
     private func setupView() {
-        backgroundColor = UIColor(named: "backgroundSecondary")
+        backgroundColor = AppStyle.Color.backgroundSecondary
         layer.cornerRadius = 16
         translatesAutoresizingMaskIntoConstraints = false
         

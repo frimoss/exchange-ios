@@ -34,7 +34,7 @@ final class CurrencyItemView: UIView {
         let label = UILabel()
         label.text = "ARS"
         label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.textColor = UIColor(named: "textPrimary")
+        label.textColor = AppStyle.Color.textPrimary
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label

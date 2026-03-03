@@ -55,7 +55,7 @@ final class CurrencyListViewController: UIViewController {
     // MARK: - Setup
     
     private func setupUI() {
-        view.backgroundColor = UIColor(named: "backgroundSecondary")
+        view.backgroundColor = AppStyle.Color.backgroundSecondary
         view.layer.cornerRadius = 16
         view.clipsToBounds = true
         

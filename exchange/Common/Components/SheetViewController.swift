@@ -13,7 +13,7 @@ final class SheetViewController: UIViewController {
     
     private lazy var containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "backgroundPrimary")
+        view.backgroundColor = AppStyle.Color.backgroundPrimary
         view.layer.cornerRadius = 34
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -23,7 +23,7 @@ final class SheetViewController: UIViewController {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "textPrimary")
+        label.textColor = AppStyle.Color.textPrimary
         label.font = .systemFont(ofSize: 24, weight: .regular)
         label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -35,7 +35,7 @@ final class SheetViewController: UIViewController {
         let button = UIButton(type: .system)
         let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
         button.setImage(UIImage(systemName: "xmark", withConfiguration: config), for: .normal)
-        button.tintColor = UIColor(named: "textPrimary")
+        button.tintColor = AppStyle.Color.textPrimary
         button.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         
