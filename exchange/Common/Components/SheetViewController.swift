@@ -122,20 +122,20 @@ final class SheetViewController: UIViewController {
             
             // Close Button
             closeButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 32),
-            closeButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            closeButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
             closeButton.widthAnchor.constraint(equalToConstant: 30),
             closeButton.heightAnchor.constraint(equalToConstant: 30),
             
             // Title Label
             titleLabel.centerYAnchor.constraint(equalTo: closeButton.centerYAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -16),
+            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: AppStyle.Metrics.horizontalPadding),
+            titleLabel.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
             
             // Content Container
-            contentContainer.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 16),
-            contentContainer.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            contentContainer.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
-            contentContainer.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 16)
+            contentContainer.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: AppStyle.Metrics.verticalPadding),
+            contentContainer.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: AppStyle.Metrics.horizontalPadding),
+            contentContainer.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
+            contentContainer.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: AppStyle.Metrics.verticalPadding)
         ])
     }
     

@@ -56,7 +56,7 @@ final class CurrencyListViewController: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = AppStyle.Color.backgroundSecondary
-        view.layer.cornerRadius = 16
+        view.layer.cornerRadius = AppStyle.Metrics.cornerRadius
         view.clipsToBounds = true
         
         view.addSubview(tableView)

@@ -10,6 +10,17 @@ import UIKit
 @MainActor
 enum AppStyle {
     
+    // MARK: - Metrics
+    
+    enum Metrics {
+        // Padding
+        static let horizontalPadding: CGFloat = 16
+        static let verticalPadding: CGFloat = 16
+        
+        // CornerRadius
+        static let cornerRadius: CGFloat = 16
+    }
+    
     // MARK: - Color
     
     enum Color {

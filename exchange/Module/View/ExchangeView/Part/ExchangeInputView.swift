@@ -78,7 +78,7 @@ final class ExchangeInputView: UIView {
     
     private func setupView() {
         backgroundColor = AppStyle.Color.backgroundSecondary
-        layer.cornerRadius = 16
+        layer.cornerRadius = AppStyle.Metrics.cornerRadius
         translatesAutoresizingMaskIntoConstraints = false
         
         addSubviews([currencyLabel, chooseCurrencyButton, amountTextField])
@@ -96,16 +96,16 @@ final class ExchangeInputView: UIView {
             heightAnchor.constraint(equalToConstant: 66),
             
             // Currency Label
-            currencyLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            currencyLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: AppStyle.Metrics.horizontalPadding),
             currencyLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
             
             chooseCurrencyButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             chooseCurrencyButton.leadingAnchor.constraint(equalTo: currencyLabel.trailingAnchor, constant: 8),
             
             // Exchange Rate Label
-            amountTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            amountTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
             amountTextField.centerYAnchor.constraint(equalTo: centerYAnchor),
-            amountTextField.leadingAnchor.constraint(greaterThanOrEqualTo: chooseCurrencyButton.trailingAnchor, constant: 16)
+            amountTextField.leadingAnchor.constraint(greaterThanOrEqualTo: chooseCurrencyButton.trailingAnchor, constant: AppStyle.Metrics.horizontalPadding)
         ])
     }
     

@@ -73,7 +73,7 @@ final class CurrencyItemView: UIView {
             heightAnchor.constraint(equalToConstant: 60),
             
             // Image Container
-            containerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            containerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: AppStyle.Metrics.horizontalPadding),
             containerView.centerYAnchor.constraint(equalTo: centerYAnchor),
             containerView.widthAnchor.constraint(equalToConstant: 40),
             containerView.heightAnchor.constraint(equalToConstant: 40),
@@ -90,7 +90,7 @@ final class CurrencyItemView: UIView {
             currencyLabel.trailingAnchor.constraint(lessThanOrEqualTo: checkbox.leadingAnchor, constant: -8),
             
             // Checkbox
-            checkbox.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            checkbox.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
             checkbox.centerYAnchor.constraint(equalTo: centerYAnchor),
             checkbox.widthAnchor.constraint(equalToConstant: 24),
             checkbox.heightAnchor.constraint(equalToConstant: 24),
