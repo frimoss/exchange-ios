@@ -20,6 +20,6 @@ enum AppStyle {
         static let textPrimary = UIColor(resource: .textPrimary)
         
         // Accent
-        static let accent = UIColor(resource: .accentGreen)
+        static let accent = UIColor(resource: .accent)
     }
 }
