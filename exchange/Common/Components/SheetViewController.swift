@@ -14,7 +14,6 @@ final class SheetViewController: UIViewController {
     private lazy var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = AppStyle.Color.backgroundPrimary
-        view.layer.cornerRadius = 34
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.translatesAutoresizingMaskIntoConstraints = false
         
@@ -82,7 +81,6 @@ final class SheetViewController: UIViewController {
         guard let sheet = sheetPresentationController else { return }
         sheet.detents = [.medium(), .large()]
         sheet.prefersGrabberVisible = true
-        sheet.preferredCornerRadius = 34
     }
     
     private func setupUI() {
@@ -90,9 +88,7 @@ final class SheetViewController: UIViewController {
         
         // Add views
         view.addSubview(containerView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(closeButton)
-        containerView.addSubview(contentContainer)
+        containerView.addSubviews([titleLabel, closeButton, contentContainer])
         
         // Configure title
         titleLabel.text = sheetTitle

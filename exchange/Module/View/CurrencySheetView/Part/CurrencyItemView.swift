@@ -62,10 +62,8 @@ final class CurrencyItemView: UIView {
     // MARK: - Setup
     
     private func setupView() {
-        addSubview(containerView)
         containerView.addSubview(imageView)
-        addSubview(currencyLabel)
-        addSubview(checkbox)
+        addSubviews([containerView, currencyLabel, checkbox])
     }
     
     private func setupConstraints() {
