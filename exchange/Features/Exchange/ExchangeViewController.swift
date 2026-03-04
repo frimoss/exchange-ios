@@ -9,17 +9,17 @@ import UIKit
 
 final class ExchangeViewController: UIViewController {
     
-    // MARK: - ViewModel
+    // MARK: - Dependencies
     
-    private let viewModel = ExchangeViewModel()
+    private let viewModel: ExchangeViewModel
     
     // MARK: - UI Components
     
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Exchange calculator"
-        label.font = .systemFont(ofSize: 30, weight: .bold)
-        label.textColor = UIColor(named: "textPrimary")
+        label.font = AppStyle.Typography.header
+        label.textColor = AppStyle.Color.textPrimary
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -29,8 +29,8 @@ final class ExchangeViewController: UIViewController {
     private let exchangeRateLabel: UILabel = {
         let label = UILabel()
         label.text = "1 USDc = 17.17 MXN"
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.textColor = UIColor(named: "accentGreen")
+        label.font = AppStyle.Typography.body
+        label.textColor = AppStyle.Color.accent
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -54,6 +54,17 @@ final class ExchangeViewController: UIViewController {
         
         return stackView
     }()
+    
+    // MARK: - Init
+    
+    init(viewModel: ExchangeViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - Lifecycle
     
@@ -146,7 +157,7 @@ final class ExchangeViewController: UIViewController {
     // MARK: - Setup
 
     private func setupView() {
-        view.backgroundColor = UIColor(named: "backgroundPrimary")
+        view.backgroundColor = AppStyle.Color.backgroundPrimary
         view.addSubview(mainStackView)
     }
     
@@ -167,8 +178,8 @@ final class ExchangeViewController: UIViewController {
         NSLayoutConstraint.activate([
             // Main Stack Constraints
             mainStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 70),
-            mainStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            mainStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            mainStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: AppStyle.Metrics.horizontalPadding),
+            mainStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
         ])
     }
     
@@ -176,7 +187,8 @@ final class ExchangeViewController: UIViewController {
     
     private func presentCurrencyList() {
         
-        let listVC = CurrencyListViewController(
+        // Build ListVC via Assembly
+        let listVC = CurrencyListAssembly.build(
             currencies: viewModel.state.currencies,
             selectedCurrency: viewModel.state.selectedCurrency,
             onSelect: { [weak self] currency in

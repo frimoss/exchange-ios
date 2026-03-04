@@ -74,7 +74,7 @@ final class ExchangeView: UIView {
             swapButton.heightAnchor.constraint(equalToConstant: 36), // size + (border * 2)
             
             // To Exchange Item View
-            bottomInputView.topAnchor.constraint(equalTo: topInputView.bottomAnchor, constant: 16), // spacing
+            bottomInputView.topAnchor.constraint(equalTo: topInputView.bottomAnchor, constant: AppStyle.Metrics.verticalPadding), // spacing
             bottomInputView.leadingAnchor.constraint(equalTo: leadingAnchor),
             bottomInputView.trailingAnchor.constraint(equalTo: trailingAnchor),
             bottomInputView.bottomAnchor.constraint(equalTo: bottomAnchor)

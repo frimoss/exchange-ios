@@ -9,6 +9,8 @@ import Foundation
 
 final class MockNetworkClient: NetworkClientProtocol {
     
+    // MARK: - Dependencies
+    
     private let decoder: JSONDecoder
     
     // MARK: - Init

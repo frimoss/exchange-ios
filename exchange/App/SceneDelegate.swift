@@ -18,7 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         
-        window.rootViewController = ExchangeViewController()
+        window.rootViewController = ExchangeAssembly.build()
+        
         window.makeKeyAndVisible()
         
         self.window = window

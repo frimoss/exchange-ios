@@ -8,23 +8,23 @@
 import Foundation
 
 protocol TickerServiceProtocol {
-    
-    func fetchTickers(currencies: [String]) async throws -> [ExchangeRate]
-    
     func fetchAvailableCurrencies() async throws -> [Currency]
-    
     func fetchTickersWithFallback(currencies: [String]) async -> [ExchangeRate]
 }
 
 final class TickerService: TickerServiceProtocol {
     
+    // MARK: - Dependencies
+    
     private let client: NetworkClientProtocol
+    
+    // MARK: - Private Properties
     
     private var cache: [String: [ExchangeRate]] = [:]
     
     // MARK: - Init
     
-    init(client: NetworkClientProtocol = NetworkClient()) {
+    init(client: NetworkClientProtocol) {
         self.client = client
     }
     

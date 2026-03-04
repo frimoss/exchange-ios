@@ -17,8 +17,13 @@ final class ExchangeViewModel {
     
     // MARK: - Dependencies
     
-    private let service = TickerService()
-    //private let service = TickerService(client: MockNetworkClient())
+    private let service: TickerServiceProtocol
+    
+    // MARK: - Init
+    
+    init(service: TickerServiceProtocol) {
+        self.service = service
+    }
     
     // MARK: - Load
     

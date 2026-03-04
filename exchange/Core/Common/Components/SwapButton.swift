@@ -24,17 +24,13 @@ final class SwapButton: UIButton {
     
     private func configure() {
         setImage(UIImage(systemName: "arrow.down.circle.fill"), for: .normal)
-        tintColor = UIColor(named: "accentGreen")
-        backgroundColor = UIColor(named: "backgroundSecondary")
+        tintColor = AppStyle.Color.accent
+        backgroundColor = AppStyle.Color.backgroundSecondary
         translatesAutoresizingMaskIntoConstraints = false
         
         // Icon Size
         let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .medium)
         setPreferredSymbolConfiguration(config, forImageIn: .normal)
-        
-        // Haptic Feedback
-        let feedback = UIImpactFeedbackGenerator(style: .medium)
-        feedback.impactOccurred()
     }
     
     // MARK: - Layout
@@ -48,6 +44,6 @@ final class SwapButton: UIButton {
         
         // Border
         layer.borderWidth = 6
-        layer.borderColor = UIColor(named: "backgroundPrimary")?.cgColor
+        layer.borderColor = AppStyle.Color.backgroundPrimary.cgColor
     }
 }

@@ -13,8 +13,7 @@ final class SheetViewController: UIViewController {
     
     private lazy var containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "backgroundPrimary")
-        view.layer.cornerRadius = 34
+        view.backgroundColor = AppStyle.Color.backgroundPrimary
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.translatesAutoresizingMaskIntoConstraints = false
         
@@ -23,8 +22,8 @@ final class SheetViewController: UIViewController {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "textPrimary")
-        label.font = .systemFont(ofSize: 24, weight: .regular)
+        label.textColor = AppStyle.Color.textPrimary
+        label.font = AppStyle.Typography.title
         label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -35,7 +34,7 @@ final class SheetViewController: UIViewController {
         let button = UIButton(type: .system)
         let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
         button.setImage(UIImage(systemName: "xmark", withConfiguration: config), for: .normal)
-        button.tintColor = UIColor(named: "textPrimary")
+        button.tintColor = AppStyle.Color.textPrimary
         button.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         
@@ -82,7 +81,6 @@ final class SheetViewController: UIViewController {
         guard let sheet = sheetPresentationController else { return }
         sheet.detents = [.medium(), .large()]
         sheet.prefersGrabberVisible = true
-        sheet.preferredCornerRadius = 34
     }
     
     private func setupUI() {
@@ -90,9 +88,7 @@ final class SheetViewController: UIViewController {
         
         // Add views
         view.addSubview(containerView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(closeButton)
-        containerView.addSubview(contentContainer)
+        containerView.addSubviews([titleLabel, closeButton, contentContainer])
         
         // Configure title
         titleLabel.text = sheetTitle
@@ -126,20 +122,20 @@ final class SheetViewController: UIViewController {
             
             // Close Button
             closeButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 32),
-            closeButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            closeButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
             closeButton.widthAnchor.constraint(equalToConstant: 30),
             closeButton.heightAnchor.constraint(equalToConstant: 30),
             
             // Title Label
             titleLabel.centerYAnchor.constraint(equalTo: closeButton.centerYAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -16),
+            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: AppStyle.Metrics.horizontalPadding),
+            titleLabel.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
             
             // Content Container
-            contentContainer.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 16),
-            contentContainer.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            contentContainer.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
-            contentContainer.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 16)
+            contentContainer.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: AppStyle.Metrics.verticalPadding),
+            contentContainer.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: AppStyle.Metrics.horizontalPadding),
+            contentContainer.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
+            contentContainer.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: AppStyle.Metrics.verticalPadding)
         ])
     }
     
