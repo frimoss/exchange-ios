@@ -187,7 +187,8 @@ final class ExchangeViewController: UIViewController {
     
     private func presentCurrencyList() {
         
-        let listVC = CurrencyListViewController(
+        // Build ListVC via Assembly
+        let listVC = CurrencyListAssembly.build(
             currencies: viewModel.state.currencies,
             selectedCurrency: viewModel.state.selectedCurrency,
             onSelect: { [weak self] currency in

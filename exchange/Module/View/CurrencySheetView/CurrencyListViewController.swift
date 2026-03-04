@@ -9,11 +9,9 @@ import UIKit
 
 final class CurrencyListViewController: UIViewController {
     
-    // MARK: - Private Properties
+    // MARK: - Dependencies
     
-    private let currencies: [Currency]
-    private var selectedIndex: Int?
-    private let selectionHandler: (Currency) -> Void
+    private let viewModel: CurrencyListViewModel
     
     // MARK: - UI Components
     
@@ -34,10 +32,8 @@ final class CurrencyListViewController: UIViewController {
     
     // MARK: - Init
     
-    init(currencies: [Currency], selectedCurrency: Currency, onSelect: @escaping (Currency) -> Void) {
-        self.currencies = currencies
-        self.selectedIndex = currencies.firstIndex(where: { $0.code == selectedCurrency.code })
-        self.selectionHandler = onSelect
+    init(viewModel: CurrencyListViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -76,11 +72,12 @@ extension CurrencyListViewController: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return currencies.count
+        return viewModel.numberOfCurrencies
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        // Get Cell
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: CurrencyCell.identifier,
             for: indexPath
@@ -88,9 +85,8 @@ extension CurrencyListViewController: UITableViewDelegate, UITableViewDataSource
             return UITableViewCell()
         }
         
-        let currency = currencies[indexPath.row]
-        
-        let isSelected = selectedIndex == indexPath.row
+        let currency = viewModel.currency(at: indexPath.row)
+        let isSelected = viewModel.isSelected(at: indexPath.row)
         
         cell.configure(currency: currency, isSelected: isSelected)
         
@@ -99,28 +95,16 @@ extension CurrencyListViewController: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        guard indexPath.row != selectedIndex else { return }
+        let result = viewModel.selectCurrency(at: indexPath.row)
         
-        // Check Selected Index
-        let oldIndex = selectedIndex
-        selectedIndex = indexPath.row
-        
-        // Reload Rows
-        var indexPathsToReload = [indexPath]
-        
-        if let oldRow = oldIndex {
-            indexPathsToReload.append(IndexPath(row: oldRow, section: 0))
+        // Update Rows
+        if !result.indexPaths.isEmpty {
+            tableView.reloadRows(at: result.indexPaths, with: .none)
         }
-
-        tableView.reloadRows(at: indexPathsToReload, with: .none)
-        
-        // User Selection
-        let selectedCurrency = currencies[indexPath.row]
-        
-        // Handle Selection
-        selectionHandler(selectedCurrency)
-        
+     
         // Close Sheet
-        dismiss(animated: true)
+        if result.shouldDismiss {
+            dismiss(animated: true)
+        }
     }
 }
