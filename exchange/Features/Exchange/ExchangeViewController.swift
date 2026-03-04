@@ -75,6 +75,7 @@ final class ExchangeViewController: UIViewController {
         setupObservation()
         setupActions()
         viewModel.loadInitialData()
+        setupKeyboardDismissGesture()
     }
     
     // MARK: - Observation
@@ -183,7 +184,7 @@ final class ExchangeViewController: UIViewController {
         ])
     }
     
-    // MARK: - Button Action
+    // MARK: - Action
     
     private func presentCurrencyList() {
         
@@ -197,6 +198,11 @@ final class ExchangeViewController: UIViewController {
         )
         
         self.showSheet(title: "Choose currency", contentViewController: listVC)
+    }
+    
+    private func setupKeyboardDismissGesture() {
+        let tap = UITapGestureRecognizer(target: view, action: #selector(UIView.endEditing(_:)))
+        view.addGestureRecognizer(tap)
     }
 }
 
