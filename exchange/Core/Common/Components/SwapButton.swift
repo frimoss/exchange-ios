@@ -31,10 +31,6 @@ final class SwapButton: UIButton {
         // Icon Size
         let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .medium)
         setPreferredSymbolConfiguration(config, forImageIn: .normal)
-        
-        // Haptic Feedback
-        let feedback = UIImpactFeedbackGenerator(style: .medium)
-        feedback.impactOccurred()
     }
     
     // MARK: - Layout

@@ -7,10 +7,6 @@
 
 import Foundation
 
-protocol NetworkClientProtocol {
-    func request<T: Decodable, E: Endpoint>(_ endpoint: E) async throws -> T
-}
-
 final class NetworkClient: NetworkClientProtocol {
     
     // MARK: - Dependencies
