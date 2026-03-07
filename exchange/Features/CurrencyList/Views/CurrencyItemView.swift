@@ -9,6 +9,10 @@ import UIKit
 
 final class CurrencyItemView: UIView {
     
+    // MARK: - Properties
+    
+    var onCheckChanged: (() -> Void)?
+    
     // MARK: - UI Components
     
     // Flag Image
@@ -103,5 +107,9 @@ final class CurrencyItemView: UIView {
         currencyLabel.text = currency.code
         imageView.image = UIImage(named: currency.imageName)
         checkbox.isChecked = isSelected
+        
+        checkbox.onToggle = { [weak self] in
+            self?.onCheckChanged?()
+        }
     }
 }

@@ -88,22 +88,36 @@ extension CurrencyListViewController: UITableViewDelegate, UITableViewDataSource
         let currency = viewModel.currency(at: indexPath.row)
         let isSelected = viewModel.isSelected(at: indexPath.row)
         
+        // Configure Cell
         cell.configure(currency: currency, isSelected: isSelected)
+        
+        // Handle Tap on CheckBox
+        cell.onToggle = { [weak self] in
+            guard let self, let actualPath = tableView.indexPath(for: cell) else { return }
+            
+            self.handleSelection(at: actualPath)
+        }
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let result = viewModel.selectCurrency(at: indexPath.row)
+        handleSelection(at: indexPath)
+    }
+    
+    // MARK: - Selection
+    
+    private func handleSelection(at indexPath: IndexPath) {
         
-        // Update Rows
-        if !result.indexPaths.isEmpty {
-            tableView.reloadRows(at: result.indexPaths, with: .none)
-        }
-     
-        // Close Sheet
-        if result.shouldDismiss {
+        // Update Selected Currency
+        viewModel.selectCurrency(at: indexPath.row)
+        
+        // Update Table View
+        tableView.reloadData()
+        
+        // Close sheet
+        if viewModel.shouldDismiss {
             dismiss(animated: true)
         }
     }

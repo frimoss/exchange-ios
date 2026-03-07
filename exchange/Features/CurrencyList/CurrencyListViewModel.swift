@@ -12,9 +12,13 @@ final class CurrencyListViewModel {
     
     // MARK: - Properties
     
-    private let currencies: [Currency]
+    private(set) var currencies: [Currency]
+    
+    private(set) var selectedIndex: Int?
+    
     private let onSelect: (Currency) -> Void
-    private var selectedIndex: Int?
+    
+    var shouldDismiss: Bool = false
     
     // MARK: - Init
     
@@ -40,22 +44,19 @@ final class CurrencyListViewModel {
     
     // MARK: - Actions
     
-    func selectCurrency(at index: Int) -> (indexPaths: [IndexPath], shouldDismiss: Bool) {
-        
-        guard index != selectedIndex else { return ([], false) }
-        
-        let oldIndex = selectedIndex
-        selectedIndex = index
-        
-        var paths = [IndexPath(row: index, section: 0)]
-        
-        if let oldRow = oldIndex {
-            paths.append(IndexPath(row: oldRow, section: 0))
+    func selectCurrency(at index: Int) {
+        // Check already selected
+        if index == selectedIndex {
+            shouldDismiss = true
+            return
         }
+        // Update Selected Index
+        selectedIndex = index
         
         // Handle Selection
         onSelect(currencies[index])
         
-        return (paths, true)
+        // Close sheet
+        shouldDismiss = true
     }
 }
