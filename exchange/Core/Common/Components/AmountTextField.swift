@@ -9,6 +9,11 @@ import UIKit
 
 final class AmountTextField: UITextField {
     
+    private enum InputLimits {
+        static let maxDigitsBeforeSeparator = 7 // 1_000_000
+        static let maxDigitsAfterSeparator = 2
+    }
+    
     // MARK: - Init
     
     override init(frame: CGRect) {
@@ -77,9 +82,6 @@ extension AmountTextField: UITextFieldDelegate {
     // Validation
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
-        let maxDigitsBeforeSeparator = 7
-        let maxDigitsAfterSeparator = 2
-        
         if string.isEmpty { return true }
 
         let separator = Locale.current.decimalSeparator ?? "."
@@ -98,7 +100,7 @@ extension AmountTextField: UITextFieldDelegate {
         // Validating Raw String (without grouping)
         let escapedSeparator = NSRegularExpression.escapedPattern(for: separator)
         
-        let pattern = "^[0-9]{0,\(maxDigitsBeforeSeparator)}(\(escapedSeparator)[0-9]{0,\(maxDigitsAfterSeparator)})?$"
+        let pattern = "^[0-9]{0,\(InputLimits.maxDigitsBeforeSeparator)}(\(escapedSeparator)[0-9]{0,\(InputLimits.maxDigitsAfterSeparator)})?$"
         
         return updatedText.range(of: pattern, options: .regularExpression) != nil
     }
