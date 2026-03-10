@@ -9,6 +9,7 @@ import Foundation
 
 enum AmountParser {
     
+    // NumberFormatter - Static to optimize using RAM (only 1 object during lifetime of the App)
     private static let formatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
@@ -18,19 +19,25 @@ enum AmountParser {
         return formatter
     }()
     
-    // Static NumberFormatter parse() - to optimise using RAM
+    // Decimal Value from Text Amount
     static func parse(_ text: String?) -> Decimal? {
         guard let text = text, !text.isEmpty else { return nil }
         
         return formatter.number(from: text)?.decimalValue
     }
     
+    // Raw Value from Formatted Text
     static func getRawValue(from text: String?) -> String {
-        
-        guard let text = text, let decimal = parse(text) else { return text ?? "" }
+        guard let text, let decimal = parse(text) else { return text ?? "" }
         
         let separator = Locale.current.decimalSeparator ?? "."
         
-        return "\(decimal)".replacingOccurrences(of: ".", with: separator)
+        var result = (decimal as NSDecimalNumber).stringValue // Always "." as Separator
+        
+        if separator != "." {
+            result = result.replacingOccurrences(of: ".", with: separator)
+        }
+        
+        return result
     }
 }
