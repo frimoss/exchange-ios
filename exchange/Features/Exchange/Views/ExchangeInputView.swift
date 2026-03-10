@@ -55,23 +55,8 @@ final class ExchangeInputView: UIView {
         return imageView
     }()
     
-    private let amountTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "0"
-        textField.font = AppStyle.Typography.body
-        textField.textColor = AppStyle.Color.textPrimary
-        
-        // Keyboard
-        textField.keyboardType = .decimalPad
-        textField.textAlignment = .right
-        
-        // Correction
-        textField.autocorrectionType = .no
-        
-        // TextField Style
-        textField.borderStyle = .none
-        textField.backgroundColor = .clear
-        
+    private let amountTextField: AmountTextField = {
+        let textField = AmountTextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
             
         return textField
@@ -180,18 +165,28 @@ final class ExchangeInputView: UIView {
     // MARK: - Configuration
         
     func configure(with config: Configuration) {
-        
+        // Update Exchange Input View
         currencyLabel.text = config.currencyCode
         countryImageView.image = UIImage(named: config.currencyCode)
         
         currencyAreaButton.isEnabled = config.isCurrencySelectionEnabled
         chooseCurrencyChevronImageView.isHidden = !config.isCurrencySelectionEnabled
         
+        // Handle Amount Changed
         self.textChangeHandler = config.onAmountChanged
         
-        // Update Amount only if changed
-        if amountTextField.text != config.amount {
-            amountTextField.text = config.amount
+        // Formatting if Not First Responder
+        if amountTextField.isFirstResponder {
+            // Update Amount only if changed
+            if amountTextField.text != config.amount {
+                amountTextField.text = config.amount
+            }
+        } else {
+            if let decimal = AmountParser.parse(config.amount) {
+                amountTextField.text = decimal.toCurrency()
+            } else {
+                amountTextField.text = config.amount
+            }
         }
     }
 }
