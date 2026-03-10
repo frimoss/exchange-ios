@@ -41,12 +41,12 @@ final class AmountTextField: UITextField {
         autocorrectionType = .no
         spellCheckingType = .no
 
-        // Layout
-        adjustsFontSizeToFitWidth = true
-        minimumFontSize = 12
-
         // TextField Style
         borderStyle = .none
+        
+        // Content Size
+        setContentHuggingPriority(.required, for: .horizontal)
+        setContentCompressionResistancePriority(.required, for: .horizontal)
     }
     
     override func becomeFirstResponder() -> Bool {

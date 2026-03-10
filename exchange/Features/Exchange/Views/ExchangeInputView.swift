@@ -79,8 +79,12 @@ final class ExchangeInputView: UIView {
     }()
     
     private lazy var mainStackView: UIStackView = {
+        let spacer = UIView()
+        spacer.isUserInteractionEnabled = false
+        
         let stack = UIStackView(arrangedSubviews: [
             currencyStackView,
+            spacer,
             amountTextField
         ])
         stack.axis = .horizontal
@@ -128,7 +132,7 @@ final class ExchangeInputView: UIView {
             mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
             mainStackView.centerYAnchor.constraint(equalTo: centerYAnchor),
             
-            // Currency Stack View
+            // Currency Area Button
             currencyAreaButton.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor),
             currencyAreaButton.topAnchor.constraint(equalTo: mainStackView.topAnchor),
             currencyAreaButton.bottomAnchor.constraint(equalTo: mainStackView.bottomAnchor),
