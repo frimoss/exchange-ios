@@ -39,8 +39,6 @@ final class ExchangeViewController: UIViewController {
     
     private let exchangeView = ExchangeView()
     
-    // MARK: - Stack Views
-    
     private lazy var mainStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -54,6 +52,9 @@ final class ExchangeViewController: UIViewController {
         
         return stackView
     }()
+    
+    // Haptic Feedback on Swap Button
+    private let haptic = UIImpactFeedbackGenerator(style: .light)
     
     // MARK: - Init
     
@@ -163,10 +164,15 @@ final class ExchangeViewController: UIViewController {
     }
     
     private func setupActions() {
+        // Prepare Haptic
+        haptic.prepare()
         
         // Handle Swap Button Tap
         exchangeView.onSwapTap = { [weak self] in
-            self?.viewModel.swapTapped()
+            guard let self else { return }
+            self.haptic.impactOccurred()
+            self.viewModel.swapTapped()
+            self.haptic.prepare()
         }
         
         // Handle Currency Button Tap
