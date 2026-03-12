@@ -9,35 +9,44 @@ import Foundation
 
 enum AmountParser {
     
-    // NumberFormatter - Static to optimize using RAM (only 1 object during lifetime of the App)
-    private static let formatter: NumberFormatter = {
+    // MARK: - Private NumberFormatter
+    
+    // Formatter for Parsing Amount
+    private static let displayFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.locale = .current
-        formatter.usesGroupingSeparator = true
+        formatter.usesGroupingSeparator = true // with Separator
         
         return formatter
     }()
+    
+    // Formatter for Raw Value of Amount
+    private static let rawFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = .current
+        formatter.usesGroupingSeparator = false // No Separator
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        formatter.roundingMode = .halfUp // Math Rounding
+        
+        return formatter
+    }()
+    
+    // MARK: - Public Functions
     
     // Decimal Value from Text Amount
     static func parse(_ text: String?) -> Decimal? {
         guard let text = text, !text.isEmpty else { return nil }
         
-        return formatter.number(from: text)?.decimalValue
+        return displayFormatter.number(from: text)?.decimalValue
     }
     
-    // Raw Value from Formatted Text
+    // Raw Value from Formatted Amount
     static func getRawValue(from text: String?) -> String {
-        guard let text, let decimal = parse(text) else { return text ?? "" }
+        guard let decimal = parse(text) else { return text ?? "" }
         
-        let separator = Locale.current.decimalSeparator ?? "."
-        
-        var result = (decimal as NSDecimalNumber).stringValue // Always "." as Separator
-        
-        if separator != "." {
-            result = result.replacingOccurrences(of: ".", with: separator)
-        }
-        
-        return result
+        return rawFormatter.string(from: decimal as NSDecimalNumber) ?? ""
     }
 }
