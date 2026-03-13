@@ -28,7 +28,7 @@ final class ExchangeViewController: UIViewController {
     
     private let exchangeRateLabel: UILabel = {
         let label = UILabel()
-        label.text = "1 USDc = 17.17 MXN"
+        label.text = "1 USDc = Loading..."
         label.font = AppStyle.Typography.body
         label.textColor = AppStyle.Color.accent
         label.numberOfLines = 0
@@ -82,16 +82,13 @@ final class ExchangeViewController: UIViewController {
     // MARK: - Observation
     
     private func setupObservation() {
-        
         withObservationTracking {
             // Call Render VC by State
             render(viewModel.state)
             
         } onChange: { [weak self] in
-            
             // Safe: Put in the Main Thread
             Task { @MainActor [weak self] in
-                
                 // Run SetupObservation() again
                 self?.setupObservation()
             }
@@ -193,7 +190,6 @@ final class ExchangeViewController: UIViewController {
     // MARK: - Action
     
     private func presentCurrencyList() {
-        
         // Build ListVC via Assembly
         let listVC = CurrencyListAssembly.build(
             currencies: viewModel.state.currencies,

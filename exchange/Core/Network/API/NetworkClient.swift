@@ -45,7 +45,6 @@ final class NetworkClient: NetworkClientProtocol {
         
         // Check Response
         if let httpResponse = response as? HTTPURLResponse {
-            
             guard (200...299).contains(httpResponse.statusCode) else {
                 throw NetworkError.serverError(statusCode: httpResponse.statusCode)
             }
