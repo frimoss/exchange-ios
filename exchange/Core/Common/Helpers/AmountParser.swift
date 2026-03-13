@@ -57,7 +57,7 @@ enum AmountParser {
         // No Minus sign
         let positiveBeforeSeparator = beforeSeparator.replacingOccurrences(of: "-", with: "")
         
-        //
+        // Max Digits Validation
         if positiveBeforeSeparator.count > Constants.maxDigitsBeforeSeparator { return false }
         if afterSeparator.count > Constants.maxDigitsAfterSeparator { return false }
         
