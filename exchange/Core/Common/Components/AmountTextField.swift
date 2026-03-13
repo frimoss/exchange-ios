@@ -9,11 +9,6 @@ import UIKit
 
 final class AmountTextField: UITextField {
     
-    private enum InputLimits {
-        static let maxDigitsBeforeSeparator = 7 // 1_000_000
-        static let maxDigitsAfterSeparator = 2
-    }
-    
     // MARK: - Init
     
     override init(frame: CGRect) {
@@ -67,13 +62,11 @@ extension AmountTextField: UITextFieldDelegate {
 
     // Remove Formatting during Editing
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        
         textField.text = AmountParser.getRawValue(from: textField.text)
     }
     
-    // Formatting after Editing
+    // Add Formatting after Editing
     func textFieldDidEndEditing(_ textField: UITextField) {
-        
         guard let decimal = AmountParser.parse(textField.text) else { return }
         
         textField.text = decimal.toCurrency()
@@ -82,26 +75,42 @@ extension AmountTextField: UITextFieldDelegate {
     // Validation
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
+        // Allow deletion (backspace)
         if string.isEmpty { return true }
-
-        let separator = Locale.current.decimalSeparator ?? "."
+        
         let currentText = textField.text ?? ""
-
+        let separator = Locale.current.decimalSeparator ?? "."
+        
+        // Replace with Locale Separator
+        let replacement = (string == "." || string == ",") ? separator : string
+        
+        // Create Range
+        guard let swiftRange = Range(range, in: currentText) else { return false }
+        let updatedText = currentText.replacingCharacters(in: swiftRange, with: replacement)
+        
         // Auto-replace to "0" + separator
-        if (string == "." || string == separator) && currentText.isEmpty {
+        if updatedText == separator {
             textField.text = "0" + separator
+            
+            return false
+        }
+        
+        // Only Numbers + Separator
+        let allowedCharacters = CharacterSet.decimalDigits.union(CharacterSet(charactersIn: separator))
+        if replacement.rangeOfCharacter(from: allowedCharacters.inverted) != nil {
             return false
         }
 
-        guard let swiftRange = Range(range, in: currentText) else { return false }
+        // Validation
+        let isValid = AmountParser.isValid(updatedText)
         
-        let updatedText = currentText.replacingCharacters(in: swiftRange, with: string)
-
-        // Validating Raw String (without grouping)
-        let escapedSeparator = NSRegularExpression.escapedPattern(for: separator)
+        // Replaced Separator
+        if isValid && replacement != string {
+            textField.text = updatedText
+            
+            return false
+        }
         
-        let pattern = "^[0-9]{0,\(InputLimits.maxDigitsBeforeSeparator)}(\(escapedSeparator)[0-9]{0,\(InputLimits.maxDigitsAfterSeparator)})?$"
-        
-        return updatedText.range(of: pattern, options: .regularExpression) != nil
+        return isValid
     }
 }
