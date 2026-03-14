@@ -56,6 +56,10 @@ final class ExchangeViewController: UIViewController {
     // Haptic Feedback on Swap Button
     private let haptic = UIImpactFeedbackGenerator(style: .light)
     
+    // MARK: - Properties
+    
+    private var lastShownError: String?
+    
     // MARK: - Init
     
     init(viewModel: ExchangeViewModel) {
@@ -200,6 +204,21 @@ final class ExchangeViewController: UIViewController {
         )
         
         self.showSheet(title: "Choose currency", contentViewController: listVC)
+    }
+    
+    private func showErrorAlert(_ message: String) {
+        // Prevent double Alert
+        guard lastShownError != message else { return }
+        lastShownError = message
+        
+        // Create Alert
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(.init(title: "OK", style: .default) { [weak self] _ in
+            self?.lastShownError = nil
+        })
+        
+        // Show Alert
+        present(alert, animated: true)
     }
     
     private func setupKeyboardDismissGesture() {
