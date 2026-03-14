@@ -71,7 +71,6 @@ final class CurrencyListViewController: UIViewController {
 extension CurrencyListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
         return viewModel.numberOfCurrencies
     }
     

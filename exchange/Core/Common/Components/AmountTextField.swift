@@ -75,7 +75,7 @@ extension AmountTextField: UITextFieldDelegate {
     // Validation
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
-        // Allow deletion (backspace)
+        // Allow Deletion (backspace)
         if string.isEmpty { return true }
         
         let currentText = textField.text ?? ""
