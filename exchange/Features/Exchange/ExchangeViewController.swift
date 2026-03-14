@@ -101,59 +101,71 @@ final class ExchangeViewController: UIViewController {
     // MARK: - Render
     
     private func render(_ state: ExchangeViewState) {
-        
-        // Check State
         switch state.status {
         case .isLoading:
-            // TODO: isLoading - show loader?
-            print("Status - Loading...")
+            setLoading(true)
             
         case .error(let message):
-            // TODO: error - add alert
+            setLoading(false)
+            showErrorAlert(message)
             print("Status - Error: \(message)")
+            return // Stop here if Error
         
-        case .loaded(let currencies):
-            // TODO: currencies?
-            print("Status: .loaded")
+        case .loaded:
+            setLoading(false)
+            print("Status - Loaded")
         }
         
-        // Update Exchange Rate Label
-        if let currentRate = state.exchangeRate?.toCurrency() {
-            
-            let currentCode = state.selectedCurrency.code.uppercased()
-            
-            exchangeRateLabel.text = "1 USDc = \(currentRate) \(currentCode)"
-        }
+        updateExchangeRate(state)
+        updateInputFields(state)
+    }
+    
+    private func setLoading(_ isLoading: Bool) {
+        view.isUserInteractionEnabled = !isLoading
+        print("Status - Loading...")
+    }
+    
+    // MARK: - Update Exchange Rate Label
+    
+    private func updateExchangeRate(_ state: ExchangeViewState) {
+        guard let rate = state.exchangeRate else { return }
+        let code = state.selectedCurrency.code.uppercased()
         
-        // MARK: - Configure Input Fields
-        
-        let topInputConfig = ExchangeInputView.Configuration(
-            currencyCode: state.topCurrency.code,
-            amount: state.topAmount,
-            isCurrencySelectionEnabled: state.direction == .selectedToUsd,
-            onAmountChanged: { [weak self] newText in
-                
-                self?.viewModel.topAmountChanged(newText)
-            }
-        )
-        
-        let bottomInputConfig = ExchangeInputView.Configuration(
-            currencyCode: state.bottomCurrency.code,
-            amount: state.bottomAmount,
-            isCurrencySelectionEnabled: state.direction == .usdToSelected,
-            onAmountChanged: { [weak self] newText in
-                
-                self?.viewModel.bottomAmountChanged(newText)
-            }
-        )
-        
-        // Update Exchange Inputs
+        exchangeRateLabel.text = "1 USDc = \(rate.toCurrency()) \(code)"
+    }
+    
+    // MARK: - Configure Input Fields
+    
+    private func updateInputFields(_ state: ExchangeViewState) {
         let viewConfig = ExchangeView.Configuration(
-            topConfig: topInputConfig,
-            bottomConfig: bottomInputConfig
+            topConfig: makeTopConfig(state),
+            bottomConfig: makeBottomConfig(state),
+            isSwapLoading: state.status == .isLoading
         )
         
         exchangeView.configure(with: viewConfig)
+    }
+    
+    private func makeTopConfig(_ state: ExchangeViewState) -> ExchangeInputView.Configuration {
+        .init(
+            currencyCode: state.topCurrency.code,
+            amount: state.topAmount,
+            isCurrencySelectionEnabled: state.direction == .selectedToUsd,
+            onAmountChanged: { [weak self] newAmount in
+                self?.viewModel.topAmountChanged(newAmount)
+            }
+        )
+    }
+    
+    private func makeBottomConfig(_ state: ExchangeViewState) -> ExchangeInputView.Configuration {
+        .init(
+            currencyCode: state.bottomCurrency.code,
+            amount: state.bottomAmount,
+            isCurrencySelectionEnabled: state.direction == .usdToSelected,
+            onAmountChanged: { [weak self] newAmount in
+                self?.viewModel.bottomAmountChanged(newAmount)
+            }
+        )
     }
     
     // MARK: - Setup
@@ -193,7 +205,7 @@ final class ExchangeViewController: UIViewController {
         ])
     }
     
-    // MARK: - Action
+    // MARK: - Actions
     
     private func presentCurrencyList() {
         // Build ListVC via Assembly
