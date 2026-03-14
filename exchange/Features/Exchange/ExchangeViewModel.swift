@@ -56,7 +56,7 @@ final class ExchangeViewModel {
                 
                 newState.status = .loaded(currencies)
                 
-                // Update State - 1 Time
+                // Update State only one time
                 self.state = newState
                 
             } catch {

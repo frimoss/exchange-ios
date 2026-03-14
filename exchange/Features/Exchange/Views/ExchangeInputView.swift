@@ -19,6 +19,21 @@ final class ExchangeInputView: UIView {
 
     // MARK: - UI Components
     
+    private let currencyAreaButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
+    private let countryImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return imageView
+    }()
+    
     private let currencyLabel: UILabel = {
         let label = UILabel()
         label.font = AppStyle.Typography.body
@@ -28,37 +43,55 @@ final class ExchangeInputView: UIView {
         return label
     }()
     
-    private let amountTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "0"
-        textField.font = AppStyle.Typography.body
-        textField.textColor = AppStyle.Color.textPrimary
+    private let chooseCurrencyChevronImageView: UIImageView = {
+        let imageView = UIImageView()
+        let configuration = UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold)
+        imageView.image = UIImage(systemName: "chevron.down", withConfiguration: configuration)
+        imageView.tintColor = AppStyle.Color.textPrimary
+        imageView.contentMode = .scaleAspectFit
+        imageView.isHidden = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         
-        // Keyboard
-        textField.keyboardType = .decimalPad
-        textField.textAlignment = .left
-        
-        // Correction
-        textField.autocorrectionType = .no
-        
-        // TextField Style
-        textField.borderStyle = .none
-        textField.backgroundColor = .clear
-        
+        return imageView
+    }()
+    
+    private let amountTextField: AmountTextField = {
+        let textField = AmountTextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
             
         return textField
     }()
     
-    private let chooseCurrencyButton: UIButton = {
-        let button = UIButton()
-        let configuration = UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold)
-        button.setImage(UIImage(systemName: "chevron.down", withConfiguration: configuration), for: .normal)
-        button.tintColor = AppStyle.Color.textPrimary
-        button.isHidden = true
-        button.translatesAutoresizingMaskIntoConstraints = false
+    // MARK: - Stack Views
+    
+    private lazy var currencyStackView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [
+            countryImageView,
+            currencyLabel,
+            chooseCurrencyChevronImageView
+        ])
+        stack.axis = .horizontal
+        stack.spacing = 8
+        stack.alignment = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
         
-        return button
+        return stack
+    }()
+    
+    private lazy var mainStackView: UIStackView = {
+        let spacer = UIView()
+        spacer.isUserInteractionEnabled = false
+        
+        let stack = UIStackView(arrangedSubviews: [
+            currencyStackView,
+            spacer,
+            amountTextField
+        ])
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        
+        return stack
     }()
     
     // MARK: - Init
@@ -81,50 +114,45 @@ final class ExchangeInputView: UIView {
         layer.cornerRadius = AppStyle.Metrics.cornerRadius
         translatesAutoresizingMaskIntoConstraints = false
         
-        addSubviews([currencyLabel, chooseCurrencyButton, amountTextField])
-    }
-    
-    private func setupActions() {
-        chooseCurrencyButton.addTarget(self, action: #selector(currencyButtonTapped), for: .touchUpInside)
-        
-        amountTextField.addTarget(self, action: #selector(handleEditingChanged), for: .editingChanged)
+        addSubview(mainStackView)
+        mainStackView.addSubview(currencyAreaButton)
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            // Height constraint
+            // Fixed Height of Component
             heightAnchor.constraint(equalToConstant: 66),
             
-            // Currency Label
-            currencyLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: AppStyle.Metrics.horizontalPadding),
-            currencyLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            // Flag Image Size
+            countryImageView.widthAnchor.constraint(equalToConstant: 20),
+            countryImageView.heightAnchor.constraint(equalToConstant: 20),
             
-            chooseCurrencyButton.centerYAnchor.constraint(equalTo: centerYAnchor),
-            chooseCurrencyButton.leadingAnchor.constraint(equalTo: currencyLabel.trailingAnchor, constant: 8),
+            // Main Stack View
+            mainStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: AppStyle.Metrics.horizontalPadding),
+            mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
+            mainStackView.centerYAnchor.constraint(equalTo: centerYAnchor),
             
-            // Exchange Rate Label
-            amountTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
-            amountTextField.centerYAnchor.constraint(equalTo: centerYAnchor),
-            amountTextField.leadingAnchor.constraint(greaterThanOrEqualTo: chooseCurrencyButton.trailingAnchor, constant: AppStyle.Metrics.horizontalPadding)
+            // Currency Area Button
+            currencyAreaButton.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor),
+            currencyAreaButton.topAnchor.constraint(equalTo: mainStackView.topAnchor),
+            currencyAreaButton.bottomAnchor.constraint(equalTo: mainStackView.bottomAnchor),
+            currencyAreaButton.trailingAnchor.constraint(equalTo: currencyStackView.trailingAnchor),
         ])
     }
     
-    // MARK: - Configuration
+    private func setupActions() {
+        // Choose Currency Button Tapped
+        currencyAreaButton.addTarget(self, action: #selector(currencyButtonTapped), for: .touchUpInside)
         
-    func configure(with config: Configuration) {
+        // Handle Amount Changed
+        amountTextField.addTarget(self, action: #selector(handleEditingChanged), for: .editingChanged)
         
-        currencyLabel.text = config.currencyCode
-        chooseCurrencyButton.isHidden = !config.isCurrencySelectionEnabled
-        
-        self.textChangeHandler = config.onAmountChanged
-        
-        // Update Amount only if changed
-        if amountTextField.text != config.amount {
-            amountTextField.text = config.amount
-        }
+        // TextField Focus by Tap
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleViewTap))
+        addGestureRecognizer(tapGesture)
     }
     
-    // MARK: - Button Action
+    // MARK: - Actions
     
     @objc private func currencyButtonTapped() {
         onCurrencyTap?()
@@ -132,6 +160,35 @@ final class ExchangeInputView: UIView {
     
     @objc private func handleEditingChanged() {
         textChangeHandler?(amountTextField.text ?? "")
+    }
+    
+    @objc private func handleViewTap() {
+        amountTextField.becomeFirstResponder()
+    }
+    
+    // MARK: - Configuration
+    
+    func configure(with config: Configuration) {
+        updateCurrencyUI(config)
+        updateAmount(config.amount)
+    }
+    
+    private func updateCurrencyUI(_ config: Configuration) {
+        currencyLabel.text = config.currencyCode
+        countryImageView.image = UIImage(named: config.currencyCode)
+        currencyAreaButton.isEnabled = config.isCurrencySelectionEnabled
+        chooseCurrencyChevronImageView.isHidden = !config.isCurrencySelectionEnabled
+        
+        // Handle Amount Changed
+        self.textChangeHandler = config.onAmountChanged
+    }
+    
+    private func updateAmount(_ amount: String) {
+        guard !amountTextField.isFirstResponder else {
+            if amountTextField.text != amount { amountTextField.text = amount }
+            return
+        }
+        amountTextField.text = AmountParser.parse(amount)?.toCurrency()
     }
 }
 

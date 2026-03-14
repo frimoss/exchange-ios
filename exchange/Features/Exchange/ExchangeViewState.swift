@@ -55,7 +55,7 @@ struct ExchangeViewState {
 
 extension ExchangeViewState {
     
-    enum Status {
+    enum Status: Equatable {
         case isLoading
         case error(String)
         case loaded([Currency])

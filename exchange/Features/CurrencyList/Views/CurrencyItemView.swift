@@ -9,6 +9,10 @@ import UIKit
 
 final class CurrencyItemView: UIView {
     
+    // MARK: - Properties
+    
+    var onCheckChanged: (() -> Void)?
+    
     // MARK: - UI Components
     
     // Flag Image
@@ -23,7 +27,6 @@ final class CurrencyItemView: UIView {
 
     let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "ARS")
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -32,7 +35,6 @@ final class CurrencyItemView: UIView {
     
     private let currencyLabel: UILabel = {
         let label = UILabel()
-        label.text = "ARS"
         label.font = AppStyle.Typography.body
         label.textColor = AppStyle.Color.textPrimary
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -103,5 +105,9 @@ final class CurrencyItemView: UIView {
         currencyLabel.text = currency.code
         imageView.image = UIImage(named: currency.imageName)
         checkbox.isChecked = isSelected
+        
+        checkbox.onToggle = { [weak self] in
+            self?.onCheckChanged?()
+        }
     }
 }

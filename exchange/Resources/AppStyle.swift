@@ -17,7 +17,7 @@ enum AppStyle {
         static let horizontalPadding: CGFloat = 16
         static let verticalPadding: CGFloat = 16
         
-        // CornerRadius
+        // Corner Radius
         static let cornerRadius: CGFloat = 16
     }
     
@@ -56,7 +56,6 @@ enum AppStyle {
         
         // Dynamic Type
         private static func customFont(size: CGFloat, weight: UIFont.Weight, textStyle: UIFont.TextStyle) -> UIFont {
-            
             let font = UIFont.systemFont(ofSize: size, weight: weight)
 
             return UIFontMetrics(forTextStyle: textStyle).scaledFont(for: font)
