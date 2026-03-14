@@ -102,14 +102,12 @@ extension CurrencyListViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         handleSelection(at: indexPath)
     }
     
     // MARK: - Selection
     
     private func handleSelection(at indexPath: IndexPath) {
-        
         // Update Selected Currency
         viewModel.selectCurrency(at: indexPath.row)
         

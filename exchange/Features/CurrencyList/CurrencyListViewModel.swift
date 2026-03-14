@@ -45,11 +45,13 @@ final class CurrencyListViewModel {
     // MARK: - Actions
     
     func selectCurrency(at index: Int) {
+        
         // Check already selected
         if index == selectedIndex {
             shouldDismiss = true
             return
         }
+        
         // Update Selected Index
         selectedIndex = index
         

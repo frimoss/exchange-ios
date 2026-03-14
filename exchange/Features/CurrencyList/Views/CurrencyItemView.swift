@@ -27,7 +27,6 @@ final class CurrencyItemView: UIView {
 
     let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "ARS")
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -36,7 +35,6 @@ final class CurrencyItemView: UIView {
     
     private let currencyLabel: UILabel = {
         let label = UILabel()
-        label.text = "ARS"
         label.font = AppStyle.Typography.body
         label.textColor = AppStyle.Color.textPrimary
         label.translatesAutoresizingMaskIntoConstraints = false

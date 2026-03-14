@@ -94,7 +94,7 @@ final class SwapButton: UIButton {
             setImage(nil, for: .normal) // Hide Swap Icon
             loader.startAnimating()
         } else {
-            setImage(swapIcon, for: .normal) // Set Swap Icon
+            setImage(swapIcon, for: .normal) // Show Swap Icon
             loader.stopAnimating()
         }
     }
