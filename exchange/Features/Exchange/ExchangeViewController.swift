@@ -28,7 +28,6 @@ final class ExchangeViewController: UIViewController {
     
     private let exchangeRateLabel: UILabel = {
         let label = UILabel()
-        label.text = "1 USDc = Loading..."
         label.font = AppStyle.Typography.body
         label.textColor = AppStyle.Color.accent
         label.numberOfLines = 0
@@ -188,6 +187,9 @@ final class ExchangeViewController: UIViewController {
             mainStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 70),
             mainStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: AppStyle.Metrics.horizontalPadding),
             mainStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
+            
+            // Fixed Height for Exchange Rate Label
+            exchangeRateLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 20)
         ])
     }
     
