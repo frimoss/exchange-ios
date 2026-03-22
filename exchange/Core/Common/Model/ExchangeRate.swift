@@ -19,7 +19,10 @@ struct ExchangeRate: Decodable {
     // MARK: - Domain Properties
     
     var exchangeRate: Decimal {
-        return Decimal(string: ask) ?? 0.0
+        let askDecimal = Decimal(string: ask) ?? 0
+        let bidDecimal = Decimal(string: bid) ?? 0
+        
+        return (askDecimal + bidDecimal) / 2
     }
 
     var currencyCode: String {
