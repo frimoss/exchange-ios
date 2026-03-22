@@ -133,7 +133,7 @@ final class ExchangeViewModel {
     private func calculateOpposite(from text: String, state: ExchangeViewState, sourceIsTop: Bool) -> String {
         
         // Check User's Input
-        guard !text.isEmpty else { return "" }
+        guard !text.isEmpty else { return "0" }
         
         // Delete all spaces from Input
         let cleanText = text.components(separatedBy: .whitespaces).joined()
