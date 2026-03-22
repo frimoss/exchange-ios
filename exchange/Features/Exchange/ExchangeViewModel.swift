@@ -32,29 +32,51 @@ final class ExchangeViewModel {
             state.status = .isLoading
             
             do {
+                // MARK: - Load Data
+                
                 // Load Available Currencies
-                let currencies = try await service.fetchAvailableCurrencies()
+                let allCurrencies = try await service.fetchAvailableCurrencies()
                 
                 // Load All Tickers
-                let codes = currencies.map { $0.code } // [Currency] -> [String]
+                let codes = allCurrencies.map { $0.code } // [Currency] -> [String]
                 let exchangeRates = await service.fetchTickersWithFallback(currencies: codes)
+
+                // Convert to Dictionary Rates [currencyCode: exchangeRate]
+                let rateDict = exchangeRates.reduce(into: [String:Decimal]()) { dict, rate in
+                    dict[rate.currencyCode] = rate.exchangeRate
+                }
                 
                 // Create new State
                 var newState = state
                 
-                // Convert to Dictionary Rates [currencyCode: exchangeRate]
-                newState.rates = exchangeRates.reduce(into: [:]) { dict, rate in
-                    dict[rate.currencyCode] = rate.exchangeRate
+                // MARK: - Validate Data
+                
+                // Check if Currencies have their Rates
+                let validCurrencies = allCurrencies.filter { currency in
+                    return rateDict[currency.code] != nil
+                }
+                
+                // Error if No Currencies
+                if validCurrencies.isEmpty {
+                    state.status = .error("No exchange rates available at the moment")
+                    return
+                }
+                
+                // Check Default Currency
+                if !validCurrencies.contains(where: { $0.code == newState.selectedCurrency.code }) {
+                    newState.selectedCurrency = validCurrencies.first ?? newState.selectedCurrency
                 }
                 
                 // State
-                newState.currencies = currencies
+                newState.rates = rateDict
+                newState.currencies = validCurrencies
                 
-                // Calculate bottom Amount (by default)
+                // MARK: - Calculate bottom Amount
+                
                 let calculated = calculateOpposite(from: newState.topAmount, state: newState, sourceIsTop: true)
                 newState.bottomAmount = calculated
                 
-                newState.status = .loaded(currencies)
+                newState.status = .loaded(validCurrencies)
                 
                 // Update State only one time
                 self.state = newState
