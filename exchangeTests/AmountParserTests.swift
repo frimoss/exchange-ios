@@ -76,4 +76,43 @@ final class AmountParserTests: XCTestCase {
         // Compare Decimal Objects
         XCTAssertEqual(result, expected)
     }
+
+    
+    // MARK: - Raw Value Tests (getRawValue) -
+    
+    func test_getRawValue_removesGroupingSeparators() {
+        
+        let systemGroupingSeparator = Locale.current.groupingSeparator ?? " "
+        
+        // Formatted value: "1 000.50"
+        let input = "1\(systemGroupingSeparator)000\(separator)50"
+        
+        // Raw Value -> "1000.50"
+        let result = AmountParser.getRawValue(from: input)
+        
+        XCTAssertFalse(result.contains(" "))
+        XCTAssertFalse(result.contains(systemGroupingSeparator))
+    }
+
+    func test_getRawValue_roundsUsingHalfUp() {
+        
+        // RawFormatter with .halfUp и 2 digits after dot
+        let input = "10\(separator)555"
+        
+        // Should return: "10.555" -> "10.56"
+        let result = AmountParser.getRawValue(from: input)
+   
+        XCTAssertEqual(result, "10\(separator)56")
+    }
+
+    func test_getRawValue_withLeadingZeros_returnsCleanNumber() {
+        
+        // Extra Zeros in front
+        let input = "00\(separator)5" // "00.5"
+        
+        // Should return "00.5" -> "0.5"
+        let result = AmountParser.getRawValue(from: input)
+        
+        XCTAssertEqual(result, "0\(separator)5")
+    }
 }
