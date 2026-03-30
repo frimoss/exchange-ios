@@ -10,41 +10,182 @@ import XCTest
 
 @MainActor
 final class ExchangeViewModelTests: XCTestCase {
-    
-    // SUT - System Under Test (from David Piper)
+
+    // MARK: - SUT
+
     private var sut: ExchangeViewModel!
     private var mockService: MockTickerService!
 
-    // Test Start
+    // MARK: - Lifecycle
+
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockService = MockTickerService()
         sut = ExchangeViewModel(service: mockService)
     }
 
-    // Test Finish
-    override func tearDownWithError() throws {
+    override func tearDown() async throws {
         sut = nil
         mockService = nil
-        try super.tearDownWithError()
+        try await super.tearDown()
     }
     
-    // MARK: - Tests
+    
+    // MARK: - Group 1: Initial Data Loading -
 
-    func test_loadInitialData_whenRatesMissing_shouldFilterCurrencies() async throws {
-        
-        // 1. Given - MockTickerService without ARS Exchange Rate
-        
-        // 2. When
+    // 1. Successful Data Load sets Status = .loaded and correct Currency count
+    func test_loadInitialData_success_setsLoadedStatus() async throws {
+        // Given
+        mockService.mockCurrencies = [Currency(code: "BRL"), Currency(code: "MXN")]
+        mockService.mockRates = [
+            ExchangeRate(ask: "17.1703", bid: "17.1671", book: "usdc_mxn", date: ""),
+            ExchangeRate(ask: "5.2589",  bid: "5.2065",  book: "usdc_brl", date: "")
+        ]
+
+        // When
         sut.loadInitialData()
-        
         await Task.yield()
-        
-        // 3. Then
-        let resultCurrencies = sut.state.currencies
-        let containsARS = resultCurrencies.contains { $0.code == "ARS" }
-        
-        XCTAssertFalse(containsARS, "ARS should not be included in the filtered list")
-        XCTAssertEqual(resultCurrencies.count, 3, "There should be 3 currencies after filtering ARS")
+
+        // Then
+        guard case .loaded(let currencies) = sut.state.status else {
+            return XCTFail("Expected .loaded status, got \(sut.state.status)")
+        }
+        XCTAssertEqual(currencies.count, 2)
+    }
+
+    // 2. API Error during Currency Fetch sets Status = .error and Expected Message
+    func test_loadInitialData_apiError_setsErrorStatus() async throws {
+        // Given
+        mockService.shouldThrowError = true
+
+        // When
+        sut.loadInitialData()
+        await Task.yield()
+
+        // Then
+        guard case .error(let message) = sut.state.status else {
+            return XCTFail("Expected .error status, got \(sut.state.status)")
+        }
+        XCTAssertEqual(message, "Failed to sync Rates")
+    }
+
+    // 3. Currencies without matching Exchange Rates are excluded from State
+    func test_loadInitialData_filtersCurrenciesWithoutRates() async throws {
+        // Given
+        mockService.mockCurrencies = [Currency(code: "MXN"), Currency(code: "ARS")]
+        mockService.mockRates = [
+            ExchangeRate(ask: "17.1703", bid: "17.1671", book: "usdc_mxn", date: "")
+        ]
+
+        // When
+        sut.loadInitialData()
+        await Task.yield()
+
+        // Then
+        let codes = sut.state.currencies.map { $0.code }
+        XCTAssertEqual(codes, ["MXN"], "Only MXN should remain after filtering")
+        XCTAssertFalse(codes.contains("ARS"))
+    }
+
+    // 4. No valid Currencies after filtering sets Status = .error
+    func test_loadInitialData_emptyValidCurrencies_setsError() async throws {
+        // Given
+        mockService.mockCurrencies = [Currency(code: "BTC")]
+        mockService.mockRates = []
+
+        // When
+        sut.loadInitialData()
+        await Task.yield()
+
+        // Then
+        guard case .error(let message) = sut.state.status else {
+            return XCTFail("Expected .error status, got \(sut.state.status)")
+        }
+        XCTAssertEqual(message, "No exchange rates available at the moment")
+    }
+
+    
+    // MARK: - Group 2: Amount Input Logic -
+
+    // 5. Typing in Top Field (USD) Recalculate Bottom Field (MXN)
+    func test_topAmountChanged_updatesBottomAmount() {
+        // Given
+        sut.state.rates = ["MXN": 20.0]
+        sut.state.direction = .usdToSelected
+
+        // When
+        sut.topAmountChanged("10")
+
+        // Then
+        let result = AmountParser.parse(sut.state.bottomAmount)
+        XCTAssertEqual(result, 200.00, "10 USD * 20 = 200 MXN")
+    }
+
+    // 6. Typing in Bottom Field (MXN) Recalculate Top Field (USD)
+    func test_bottomAmountChanged_updatesTopAmount() {
+        // Given
+        sut.state.rates = ["MXN": 20.0]
+        sut.state.direction = .usdToSelected
+
+        // When
+        sut.bottomAmountChanged("100")
+
+        // Then
+        let result = AmountParser.parse(sut.state.topAmount)
+        XCTAssertEqual(result, 5.00, "100 MXN / 20 = 5 USD")
+    }
+
+    // 7. Empty input in Top Field sets Bottom amount to "0"
+    func test_topAmountChanged_emptyInput_returnsZero() {
+        sut.topAmountChanged("")
+        XCTAssertEqual(sut.state.bottomAmount, "0")
+    }
+
+    
+    // MARK: - Group 3: User Actions -
+
+    // 8. Swap Reverses Direction and Recalculate Amounts
+    func test_swapTapped_reversesDirectionAndRecalculates() {
+        // Given
+        sut.state.rates = ["MXN": 20.0]
+        sut.state.topAmount = "1"
+        sut.state.direction = .usdToSelected
+        sut.state.activeField = .top
+
+        // When
+        sut.swapTapped()
+
+        // Then
+        XCTAssertEqual(sut.state.direction, .selectedToUsd)
+        let result = AmountParser.parse(sut.state.bottomAmount)
+        XCTAssertEqual(result, 0.05, "1 MXN / 20 = 0.05 USD")
+    }
+
+    // 9. Selecting a Currency Updates the Exchange Rate and Recalculates Bottom Amount
+    func test_currencySelected_updatesRateAndRecalculates() {
+        // Given
+        sut.state.rates = ["MXN": 20.0, "USD": 0.9]
+        sut.state.topAmount = "100"
+        sut.state.activeField = .top
+        sut.state.direction = .usdToSelected
+
+        // When
+        sut.currencySelected(Currency(code: "USD"))
+
+        // Then
+        let result = AmountParser.parse(sut.state.bottomAmount)
+        XCTAssertEqual(result, 90.0, "100 / 0.9 = 90")
+    }
+
+    // 10. Non-numeric Input is rejected and Bottom Amount is set to Empty
+    func test_topAmountChanged_nonNumericInput_returnsEmpty() {
+        // Given
+        sut.state.rates = ["MXN": 20.0]
+
+        // When
+        sut.topAmountChanged("text")
+
+        // Then
+        XCTAssertEqual(sut.state.bottomAmount, "")
     }
 }
