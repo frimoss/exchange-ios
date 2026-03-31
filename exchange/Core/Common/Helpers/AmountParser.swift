@@ -23,6 +23,7 @@ enum AmountParser {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.locale = .current
+        formatter.generatesDecimalNumbers = true // Use Decimal instead of Double
         formatter.usesGroupingSeparator = true // with Separator
         
         return formatter
