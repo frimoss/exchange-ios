@@ -25,135 +25,113 @@ final class ExchangeViewModel {
         self.service = service
     }
     
-    // MARK: - Load
+    // MARK: - Public Actions
     
     func loadInitialData() {
         Task {
-            state.status = .isLoading
+            updateState { $0.status = .isLoading }
             
             do {
-                // MARK: - Load Data
+                // 1. Load Raw Data
+                let (currencies, rates) = try await fetchRequiredData()
                 
-                // Load Available Currencies
-                let allCurrencies = try await service.fetchAvailableCurrencies()
+                // 2. Validation
+                let validCurrencies = try validate(currencies: currencies, with: rates)
                 
-                // Load All Tickers
-                let codes = allCurrencies.map { $0.code } // [Currency] -> [String]
-                let exchangeRates = await service.fetchTickersWithFallback(currencies: codes)
-
-                // Convert to Dictionary Rates [currencyCode: exchangeRate]
-                let rateDict = exchangeRates.reduce(into: [String:Decimal]()) { dict, rate in
-                    dict[rate.currencyCode] = rate.exchangeRate
+                // 3. Set State
+                updateState { newState in
+                    newState.rates = rates
+                    newState.currencies = validCurrencies
+                    
+                    // Check default Currency exist
+                    if !validCurrencies.contains(where: { $0.code == newState.selectedCurrency.code }) {
+                        newState.selectedCurrency = validCurrencies.first ?? newState.selectedCurrency
+                    }
+                    
+                    newState.status = .loaded(validCurrencies)
+                    self.syncAmounts(in: &newState)
                 }
-                
-                // Create new State
-                var newState = state
-                
-                // MARK: - Validate Data
-                
-                // Check if Currencies have their Rates
-                let validCurrencies = allCurrencies.filter { currency in
-                    return rateDict[currency.code] != nil
-                }
-                
-                // Error if No Currencies
-                if validCurrencies.isEmpty {
-                    state.status = .error("No exchange rates available at the moment")
-                    return
-                }
-                
-                // Check Default Currency
-                if !validCurrencies.contains(where: { $0.code == newState.selectedCurrency.code }) {
-                    newState.selectedCurrency = validCurrencies.first ?? newState.selectedCurrency
-                }
-                
-                // State
-                newState.rates = rateDict
-                newState.currencies = validCurrencies
-                
-                // MARK: - Calculate bottom Amount
-                
-                let calculated = calculateOpposite(from: newState.topAmount, state: newState, sourceIsTop: true)
-                newState.bottomAmount = calculated
-                
-                newState.status = .loaded(validCurrencies)
-                
-                // Update State only one time
-                self.state = newState
-                
             } catch {
-                state.status = .error("Failed to sync Rates")
+                updateState { $0.status = .error("Failed to sync Rates") }
             }
         }
     }
     
-    // MARK: - User Actions
-    
     func topAmountChanged(_ text: String) {
-        var newState = state
-        
-        newState.activeField = .top
-        newState.topAmount = text
-        newState.bottomAmount = calculateOpposite(from: text, state: newState, sourceIsTop: true)
-        
-        self.state = newState
+        updateState { newState in
+            newState.activeField = .top
+            newState.topAmount = text
+            newState.bottomAmount = calculateOpposite(from: text, state: newState, sourceIsTop: true)
+        }
     }
     
     func bottomAmountChanged(_ text: String) {
-        var newState = state
-        
-        newState.activeField = .bottom
-        newState.bottomAmount = text
-        newState.topAmount = calculateOpposite(from: text, state: newState, sourceIsTop: false)
-        
-        self.state = newState
+        updateState { newState in
+            newState.activeField = .bottom
+            newState.bottomAmount = text
+            newState.topAmount = calculateOpposite(from: text, state: newState, sourceIsTop: false)
+        }
     }
     
     func swapTapped() {
-        var newState = state
-        
-        newState.direction = (state.direction == .usdToSelected) ? .selectedToUsd : .usdToSelected
-        
-        // Recalculate
-        let (updatedTop, updatedBottom) = recalculate(for: newState)
-        newState.topAmount = updatedTop
-        newState.bottomAmount = updatedBottom
-        
-        self.state = newState
+        updateState { newState in
+            newState.direction = (state.direction == .usdToSelected) ? .selectedToUsd : .usdToSelected
+            self.syncAmounts(in: &newState)
+        }
     }
     
     func currencySelected(_ currency: Currency) {
-        var newState = state
+        updateState { newState in
+            newState.selectedCurrency = currency
+            self.syncAmounts(in: &newState)
+        }
+    }
+    
+    // MARK: - Private Loading Steps
+    
+    private func fetchRequiredData() async throws -> ([Currency], [String: Decimal]) {
+        // Load Available Currencies
+        let currencies = try await service.fetchAvailableCurrencies()
+        let codes = currencies.map { $0.code } // [Currency] -> [String]
         
-        newState.selectedCurrency = currency
+        // Load Rates
+        let exchangeRates = await service.fetchTickersWithFallback(currencies: codes)
         
-        // Recalculate
-        let (updatedTop, updatedBottom) = recalculate(for: newState)
-        newState.topAmount = updatedTop
-        newState.bottomAmount = updatedBottom
+        // Convert to Dictionary Rates [currencyCode: exchangeRate]
+        let rateDict = exchangeRates.reduce(into: [String:Decimal]()) { dict, rate in
+            dict[rate.currencyCode] = rate.exchangeRate
+        }
         
+        return (currencies, rateDict)
+    }
+    
+    private func validate(currencies: [Currency], with rates: [String: Decimal]) throws -> [Currency] {
+        // Check if Currencies have their Rates
+        let valid = currencies.filter { rates[$0.code] != nil}
+        guard !valid.isEmpty else { throw ExchangeError.noRatesAvailable }
+        
+        return valid
+    }
+    
+    // MARK: - Private Helpers
+    
+    private func updateState(_ modification: (inout ExchangeViewState) -> Void) {
+        var newState = self.state
+        modification(&newState)
         self.state = newState
     }
     
-    // MARK: - Private Calculations -
-    
-    private func recalculate(for targetState: ExchangeViewState) -> (top: String, bottom: String) {
-        
-        var top = targetState.topAmount
-        var bottom = targetState.bottomAmount
-        
-        switch state.activeField {
+    /// General logic of re-calculation when changing the Currency or Direction
+    private func syncAmounts(in newState: inout ExchangeViewState) {
+        switch newState.activeField {
         case .top:
-            bottom = calculateOpposite(from: targetState.topAmount, state: targetState, sourceIsTop: true)
+            newState.bottomAmount = calculateOpposite(from: newState.topAmount, state: newState, sourceIsTop: true)
         case .bottom:
-            top = calculateOpposite(from: targetState.bottomAmount, state: targetState, sourceIsTop: false)
+            newState.topAmount = calculateOpposite(from: newState.bottomAmount, state: newState, sourceIsTop: false)
         }
-        
-        return (top, bottom)
     }
     
     private func calculateOpposite(from text: String, state: ExchangeViewState, sourceIsTop: Bool) -> String {
-        
         // Check User's Input
         guard !text.isEmpty else { return "0" }
         
