@@ -11,11 +11,11 @@ import Foundation
 @Observable
 final class ExchangeViewModel {
     
-    // MARK: - State
+    // MARK: - Public
     
     var state = ExchangeViewState()
     
-    // MARK: - Dependencies
+    // MARK: - Private Dependencies
     
     private let service: TickerServiceProtocol
     
@@ -33,26 +33,21 @@ final class ExchangeViewModel {
             
             do {
                 // 1. Load Raw Data
-                let (currencies, rates) = try await fetchRequiredData()
-                
+                let (currencies, ratesDict) = try await fetchRequiredData()
                 // 2. Validation
-                let validCurrencies = try validate(currencies: currencies, with: rates)
-                
+                let validCurrencies = try validate(currencies: currencies, with: ratesDict)
                 // 3. Set State
-                updateState { newState in
-                    newState.rates = rates
-                    newState.currencies = validCurrencies
-                    
-                    // Check default Currency exist
-                    if !validCurrencies.contains(where: { $0.code == newState.selectedCurrency.code }) {
-                        newState.selectedCurrency = validCurrencies.first ?? newState.selectedCurrency
-                    }
-                    
-                    newState.status = .loaded(validCurrencies)
-                    self.syncAmounts(in: &newState)
-                }
+                finalizeLoading(currencies: validCurrencies, rates: ratesDict, error: nil)
+                
             } catch {
-                updateState { $0.status = .error("Failed to sync Rates") }
+                print("Network Error: \(error)")
+                print("\nNetwork Error Description: \(error.localizedDescription)")
+                
+                // Handle Error
+                let finalError = ExchangeError.map(error)
+                
+                // Show Fallback Data to the User
+                handleFallback(error: finalError)
             }
         }
     }
@@ -87,6 +82,10 @@ final class ExchangeViewModel {
         }
     }
     
+    func errorShown() {
+        updateState { $0.alertMessage = nil }
+    }
+    
     // MARK: - Private Loading Steps
     
     private func fetchRequiredData() async throws -> ([Currency], [String: Decimal]) {
@@ -95,7 +94,7 @@ final class ExchangeViewModel {
         let codes = currencies.map { $0.code } // [Currency] -> [String]
         
         // Load Rates
-        let exchangeRates = await service.fetchTickersWithFallback(currencies: codes)
+        let exchangeRates = try await service.fetchTickers(currencies: codes)
         
         // Convert to Dictionary Rates [currencyCode: exchangeRate]
         let rateDict = exchangeRates.reduce(into: [String:Decimal]()) { dict, rate in
@@ -108,9 +107,33 @@ final class ExchangeViewModel {
     private func validate(currencies: [Currency], with rates: [String: Decimal]) throws -> [Currency] {
         // Check if Currencies have their Rates
         let valid = currencies.filter { rates[$0.code] != nil}
-        guard !valid.isEmpty else { throw ExchangeError.noRatesAvailable }
+        guard !valid.isEmpty else { throw ExchangeError.emptyResponse }
         
         return valid
+    }
+    
+    private func finalizeLoading(currencies: [Currency], rates: [String: Decimal], error: ExchangeError?) {
+        updateState { newState in
+            newState.currencies = currencies
+            newState.rates = rates
+            newState.status = .loaded(currencies)
+            newState.alertMessage = error?.errorDescription
+            
+            // Check Selected Currency exist
+            if !currencies.contains(where: { $0.code == newState.selectedCurrency.code }) {
+                newState.selectedCurrency = currencies.first ?? newState.selectedCurrency
+            }
+            
+            self.syncAmounts(in: &newState)
+        }
+    }
+    
+    private func handleFallback(error: ExchangeError) {
+        finalizeLoading(
+            currencies: Currency.mockCurrencies,
+            rates: ExchangeRate.mockDictRates,
+            error: error
+        )
     }
     
     // MARK: - Private Helpers
