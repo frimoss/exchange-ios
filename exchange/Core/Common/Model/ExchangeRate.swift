@@ -34,10 +34,5 @@ struct ExchangeRate: Decodable {
 // MARK: - Mock Tickers Data -
 
 extension ExchangeRate {
-    static var mockRates: [ExchangeRate] = [
-        ExchangeRate(ask: "1466.4900", bid: "1462.8138", book: "usdc_ars", date: ""),
-        ExchangeRate(ask: "3720.9410", bid: "3680.6000", book: "usdc_cop", date: ""),
-        ExchangeRate(ask: "17.1703", bid: "17.1671", book: "usdc_mxn", date: ""),
-        ExchangeRate(ask: "5.2589", bid: "5.2065", book: "usdc_brl", date: "")
-    ]
+    static var mockDictRates: [String: Decimal] = ["ARS": 1466.49, "COP": 3720.94, "MXN": 17.17, "BRL": 5.26]
 }
