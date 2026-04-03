@@ -28,6 +28,7 @@ struct ExchangeViewState {
     // MARK: - Status
     
     var status: Status = .isLoading
+    var alertMessage: String?
     
     // MARK: - Computed Properties
     
@@ -57,7 +58,6 @@ extension ExchangeViewState {
     
     enum Status: Equatable {
         case isLoading
-        case error(String)
         case loaded([Currency])
     }
 
