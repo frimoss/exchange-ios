@@ -101,21 +101,16 @@ final class ExchangeViewController: UIViewController {
     // MARK: - Render
     
     private func render(_ state: ExchangeViewState) {
-        switch state.status {
-        case .isLoading:
-            setLoading(true)
-            
-        case .error(let message):
-            setLoading(false)
+        // Check Error
+        if let message = state.alertMessage {
             showErrorAlert(message)
-            print("Status - Error: \(message)")
-            return // Stop here if Error
-        
-        case .loaded:
-            setLoading(false)
-            print("Status - Loaded")
+            viewModel.errorShown()
         }
         
+        // Loading
+        setLoading(state.status == .isLoading)
+        
+        // Update UI
         updateExchangeRate(state)
         updateInputFields(state)
     }
