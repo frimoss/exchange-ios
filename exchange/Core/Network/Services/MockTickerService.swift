@@ -18,13 +18,14 @@ final class MockTickerService: TickerServiceProtocol {
     // MARK: - Mock Methods
 
     func fetchAvailableCurrencies() async throws -> [Currency] {
-        
-        if shouldThrowError { throw NSError(domain: "Network", code: -1) }
+        if shouldThrowError {
+            throw NSError(domain: "Network", code: -1)
+        }
         
         return mockCurrencies
     }
 
-    func fetchTickersWithFallback(currencies: [String]) async -> [ExchangeRate] {
+    func fetchTickers(currencies: [String]) async -> [ExchangeRate] {
         return mockRates
     }
 }
