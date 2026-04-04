@@ -6,7 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		CE52A3A62F813D6200841C7F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE803F8B2F327B2900CDBC4A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE803F922F327B2900CDBC4A;
+			remoteInfo = exchange;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		CE52A3A22F813D6200841C7F /* exchangeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = exchangeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE803F932F327B2900CDBC4A /* exchange.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = exchange.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -21,6 +32,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		CE52A3A32F813D6200841C7F /* exchangeTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = exchangeTests;
+			sourceTree = "<group>";
+		};
 		CE803F952F327B2900CDBC4A /* exchange */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -32,6 +48,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		CE52A39F2F813D6200841C7F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE803F902F327B2900CDBC4A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -46,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				CE803F952F327B2900CDBC4A /* exchange */,
+				CE52A3A32F813D6200841C7F /* exchangeTests */,
 				CE803F942F327B2900CDBC4A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				CE803F932F327B2900CDBC4A /* exchange.app */,
+				CE52A3A22F813D6200841C7F /* exchangeTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,6 +86,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		CE52A3A12F813D6200841C7F /* exchangeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE52A3A82F813D6200841C7F /* Build configuration list for PBXNativeTarget "exchangeTests" */;
+			buildPhases = (
+				CE52A39E2F813D6200841C7F /* Sources */,
+				CE52A39F2F813D6200841C7F /* Frameworks */,
+				CE52A3A02F813D6200841C7F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CE52A3A72F813D6200841C7F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CE52A3A32F813D6200841C7F /* exchangeTests */,
+			);
+			name = exchangeTests;
+			packageProductDependencies = (
+			);
+			productName = exchangeTests;
+			productReference = CE52A3A22F813D6200841C7F /* exchangeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		CE803F922F327B2900CDBC4A /* exchange */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CE803FA62F327B2A00CDBC4A /* Build configuration list for PBXNativeTarget "exchange" */;
@@ -93,6 +141,10 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					CE52A3A12F813D6200841C7F = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = CE803F922F327B2900CDBC4A;
+					};
 					CE803F922F327B2900CDBC4A = {
 						CreatedOnToolsVersion = 26.2;
 					};
@@ -113,11 +165,19 @@
 			projectRoot = "";
 			targets = (
 				CE803F922F327B2900CDBC4A /* exchange */,
+				CE52A3A12F813D6200841C7F /* exchangeTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		CE52A3A02F813D6200841C7F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE803F912F327B2900CDBC4A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -128,6 +188,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		CE52A39E2F813D6200841C7F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE803F8F2F327B2900CDBC4A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -137,7 +204,55 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		CE52A3A72F813D6200841C7F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CE803F922F327B2900CDBC4A /* exchange */;
+			targetProxy = CE52A3A62F813D6200841C7F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		CE52A3A92F813D6200841C7F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.frimoss.exchangeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/exchange.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/exchange";
+			};
+			name = Debug;
+		};
+		CE52A3AA2F813D6200841C7F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.frimoss.exchangeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/exchange.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/exchange";
+			};
+			name = Release;
+		};
 		CE803FA72F327B2A00CDBC4A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -320,6 +435,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		CE52A3A82F813D6200841C7F /* Build configuration list for PBXNativeTarget "exchangeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE52A3A92F813D6200841C7F /* Debug */,
+				CE52A3AA2F813D6200841C7F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		CE803F8E2F327B2900CDBC4A /* Build configuration list for PBXProject "exchange" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

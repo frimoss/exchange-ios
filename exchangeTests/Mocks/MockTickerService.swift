@@ -6,6 +6,7 @@
 //
 
 import Foundation
+@testable import exchange
 
 final class MockTickerService: TickerServiceProtocol {
     
