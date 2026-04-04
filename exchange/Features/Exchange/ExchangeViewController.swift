@@ -28,7 +28,6 @@ final class ExchangeViewController: UIViewController {
     
     private let exchangeRateLabel: UILabel = {
         let label = UILabel()
-        label.text = "1 USDc = 17.17 MXN"
         label.font = AppStyle.Typography.body
         label.textColor = AppStyle.Color.accent
         label.numberOfLines = 0
@@ -38,8 +37,6 @@ final class ExchangeViewController: UIViewController {
     }()
     
     private let exchangeView = ExchangeView()
-    
-    // MARK: - Stack Views
     
     private lazy var mainStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
@@ -54,6 +51,13 @@ final class ExchangeViewController: UIViewController {
         
         return stackView
     }()
+    
+    // Haptic Feedback on Swap Button
+    private let haptic = UIImpactFeedbackGenerator(style: .light)
+    
+    // MARK: - Properties
+    
+    private var lastShownError: String?
     
     // MARK: - Init
     
@@ -75,21 +79,19 @@ final class ExchangeViewController: UIViewController {
         setupObservation()
         setupActions()
         viewModel.loadInitialData()
+        setupKeyboardDismissGesture()
     }
     
     // MARK: - Observation
     
     private func setupObservation() {
-        
         withObservationTracking {
             // Call Render VC by State
             render(viewModel.state)
             
         } onChange: { [weak self] in
-            
             // Safe: Put in the Main Thread
             Task { @MainActor [weak self] in
-                
                 // Run SetupObservation() again
                 self?.setupObservation()
             }
@@ -99,59 +101,71 @@ final class ExchangeViewController: UIViewController {
     // MARK: - Render
     
     private func render(_ state: ExchangeViewState) {
-        
-        // Check State
         switch state.status {
         case .isLoading:
-            // TODO: isLoading - show loader?
-            print("Status - Loading...")
+            setLoading(true)
             
         case .error(let message):
-            // TODO: error - add alert
+            setLoading(false)
+            showErrorAlert(message)
             print("Status - Error: \(message)")
+            return // Stop here if Error
         
-        case .loaded(let currencies):
-            // TODO: currencies?
-            print("Status: .loaded")
+        case .loaded:
+            setLoading(false)
+            print("Status - Loaded")
         }
         
-        // Update Exchange Rate Label
-        if let currentRate = state.exchangeRate?.toCurrency() {
-            
-            let currentCode = state.selectedCurrency.code.uppercased()
-            
-            exchangeRateLabel.text = "1 USDc = \(currentRate) \(currentCode)"
-        }
+        updateExchangeRate(state)
+        updateInputFields(state)
+    }
+    
+    private func setLoading(_ isLoading: Bool) {
+        view.isUserInteractionEnabled = !isLoading
+        print("Status - Loading...")
+    }
+    
+    // MARK: - Update Exchange Rate Label
+    
+    private func updateExchangeRate(_ state: ExchangeViewState) {
+        guard let rate = state.exchangeRate else { return }
+        let code = state.selectedCurrency.code.uppercased()
         
-        // MARK: - Configure Input Fields
-        
-        let topInputConfig = ExchangeInputView.Configuration(
-            currencyCode: state.topCurrency.code,
-            amount: state.topAmount,
-            isCurrencySelectionEnabled: state.direction == .selectedToUsd,
-            onAmountChanged: { [weak self] newText in
-                
-                self?.viewModel.topAmountChanged(newText)
-            }
-        )
-        
-        let bottomInputConfig = ExchangeInputView.Configuration(
-            currencyCode: state.bottomCurrency.code,
-            amount: state.bottomAmount,
-            isCurrencySelectionEnabled: state.direction == .usdToSelected,
-            onAmountChanged: { [weak self] newText in
-                
-                self?.viewModel.bottomAmountChanged(newText)
-            }
-        )
-        
-        // Update Exchange Inputs
+        exchangeRateLabel.text = "1 USDc = \(rate.toCurrency()) \(code)"
+    }
+    
+    // MARK: - Configure Input Fields
+    
+    private func updateInputFields(_ state: ExchangeViewState) {
         let viewConfig = ExchangeView.Configuration(
-            topConfig: topInputConfig,
-            bottomConfig: bottomInputConfig
+            topConfig: makeTopConfig(state),
+            bottomConfig: makeBottomConfig(state),
+            isSwapLoading: state.status == .isLoading
         )
         
         exchangeView.configure(with: viewConfig)
+    }
+    
+    private func makeTopConfig(_ state: ExchangeViewState) -> ExchangeInputView.Configuration {
+        .init(
+            currencyCode: state.topCurrency.code,
+            amount: state.topAmount,
+            isCurrencySelectionEnabled: state.direction == .selectedToUsd,
+            onAmountChanged: { [weak self] newAmount in
+                self?.viewModel.topAmountChanged(newAmount)
+            }
+        )
+    }
+    
+    private func makeBottomConfig(_ state: ExchangeViewState) -> ExchangeInputView.Configuration {
+        .init(
+            currencyCode: state.bottomCurrency.code,
+            amount: state.bottomAmount,
+            isCurrencySelectionEnabled: state.direction == .usdToSelected,
+            onAmountChanged: { [weak self] newAmount in
+                self?.viewModel.bottomAmountChanged(newAmount)
+            }
+        )
     }
     
     // MARK: - Setup
@@ -162,10 +176,15 @@ final class ExchangeViewController: UIViewController {
     }
     
     private func setupActions() {
+        // Prepare Haptic
+        haptic.prepare()
         
         // Handle Swap Button Tap
         exchangeView.onSwapTap = { [weak self] in
-            self?.viewModel.swapTapped()
+            guard let self else { return }
+            self.haptic.impactOccurred()
+            self.viewModel.swapTapped()
+            self.haptic.prepare()
         }
         
         // Handle Currency Button Tap
@@ -180,13 +199,15 @@ final class ExchangeViewController: UIViewController {
             mainStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 70),
             mainStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: AppStyle.Metrics.horizontalPadding),
             mainStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -AppStyle.Metrics.horizontalPadding),
+            
+            // Fixed Height for Exchange Rate Label
+            exchangeRateLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 20)
         ])
     }
     
-    // MARK: - Button Action
+    // MARK: - Actions
     
     private func presentCurrencyList() {
-        
         // Build ListVC via Assembly
         let listVC = CurrencyListAssembly.build(
             currencies: viewModel.state.currencies,
@@ -197,6 +218,26 @@ final class ExchangeViewController: UIViewController {
         )
         
         self.showSheet(title: "Choose currency", contentViewController: listVC)
+    }
+    
+    private func showErrorAlert(_ message: String) {
+        // Prevent double Alert
+        guard lastShownError != message else { return }
+        lastShownError = message
+        
+        // Create Alert
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(.init(title: "OK", style: .default) { [weak self] _ in
+            self?.lastShownError = nil
+        })
+        
+        // Show Alert
+        present(alert, animated: true)
+    }
+    
+    private func setupKeyboardDismissGesture() {
+        let tap = UITapGestureRecognizer(target: view, action: #selector(UIView.endEditing(_:)))
+        view.addGestureRecognizer(tap)
     }
 }
 

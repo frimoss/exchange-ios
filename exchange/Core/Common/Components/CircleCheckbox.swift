@@ -11,17 +11,21 @@ final class CircleCheckbox: UIControl {
     
     // MARK: - Properties
     
+    var onToggle: (() -> Void)?
+    
     var isChecked: Bool = false {
         didSet {
+            guard oldValue != isChecked else { return }
             updateAppearance()
         }
     }
     
     // MARK: - UI Components
     
-    private lazy var imageView: UIImageView = {
+    private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        imageView.isUserInteractionEnabled = false
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
         return imageView
@@ -44,15 +48,18 @@ final class CircleCheckbox: UIControl {
         addSubview(imageView)
         
         NSLayoutConstraint.activate([
-            widthAnchor.constraint(equalToConstant: 24),
-            heightAnchor.constraint(equalToConstant: 24),
             imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
             imageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             imageView.widthAnchor.constraint(equalToConstant: 24),
-            imageView.heightAnchor.constraint(equalToConstant: 24)
+            imageView.heightAnchor.constraint(equalToConstant: 24),
+            
+            // Component Size
+            widthAnchor.constraint(equalToConstant: 24),
+            heightAnchor.constraint(equalToConstant: 24)
         ])
         
-        addTarget(self, action: #selector(toggle), for: .touchUpInside)
+        // Handle Toggle
+        addTarget(self, action: #selector(handleTap), for: .touchUpInside)
         updateAppearance()
     }
     
@@ -64,8 +71,7 @@ final class CircleCheckbox: UIControl {
     
     // MARK: - Button Action
     
-    @objc private func toggle() {
-        isChecked.toggle()
-        sendActions(for: .valueChanged)
+    @objc private func handleTap() {
+        onToggle?()
     }
 }

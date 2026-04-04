@@ -84,6 +84,8 @@ final class ExchangeView: UIView {
     // MARK: - Configuration
     
     func configure(with config: Configuration) {
+        swapButton.setLoading(config.isSwapLoading)
+        
         topInputView.configure(with: config.topConfig)
         bottomInputView.configure(with: config.bottomConfig)
     }
@@ -101,5 +103,6 @@ extension ExchangeView {
     struct Configuration {
         let topConfig: ExchangeInputView.Configuration
         let bottomConfig: ExchangeInputView.Configuration
+        let isSwapLoading: Bool
     }
 }

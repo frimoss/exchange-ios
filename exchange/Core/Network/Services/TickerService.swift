@@ -58,8 +58,6 @@ final class TickerService: TickerServiceProtocol {
     
     func fetchAvailableCurrencies() async throws -> [Currency] {
         // TODO: Fix return try await client.request(TickerEndpoint.currencies)
-        
-        print("Using Mock Currencies")
         return Currency.mockCurrencies
     }
     

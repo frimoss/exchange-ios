@@ -13,6 +13,8 @@ final class CurrencyCell: UITableViewCell {
     
     static let identifier = "CurrencyCell"
     
+    var onToggle: (() -> Void)?
+    
     // MARK: - UI Components
     
     private let currencyItemView = CurrencyItemView()
@@ -50,5 +52,9 @@ final class CurrencyCell: UITableViewCell {
     
     func configure(currency: Currency, isSelected: Bool) {
         currencyItemView.configure(currency: currency, isSelected: isSelected)
+        
+        currencyItemView.onCheckChanged = { [weak self] in
+            self?.onToggle?()
+        }
     }
 }
