@@ -56,9 +56,9 @@ struct ExchangeViewState {
 
 extension ExchangeViewState {
     
-    enum Status: Equatable {
+    enum Status {
         case isLoading
-        case loaded([Currency])
+        case loaded
     }
 
     enum ActiveField {

@@ -116,7 +116,7 @@ final class ExchangeViewModel {
         updateState { newState in
             newState.currencies = currencies
             newState.rates = rates
-            newState.status = .loaded(currencies)
+            newState.status = .loaded
             newState.alertMessage = error?.errorDescription
             
             // Check Selected Currency exist
