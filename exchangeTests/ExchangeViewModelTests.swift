@@ -98,8 +98,7 @@ final class ExchangeViewModelTests: XCTestCase {
         sut.topAmountChanged("10")
 
         // Then
-        let result = AmountParser.parse(sut.state.bottomAmount)
-        XCTAssertEqual(result, 200.00, "10 USD * 20 = 200 MXN")
+        XCTAssertEqual(sut.state.bottomAmount, "200", "10 USD * 20 = 200 MXN")
     }
 
     // Typing in Bottom Field (MXN) Recalculate Top Field (USD)
@@ -112,8 +111,7 @@ final class ExchangeViewModelTests: XCTestCase {
         sut.bottomAmountChanged("100")
 
         // Then
-        let result = AmountParser.parse(sut.state.topAmount)
-        XCTAssertEqual(result, 5.00, "100 MXN / 20 = 5 USD")
+        XCTAssertEqual(sut.state.topAmount, "5", "100 MXN / 20 = 5 USD")
     }
 
     // Empty input in Top Field sets Bottom amount to "0"
@@ -137,8 +135,7 @@ final class ExchangeViewModelTests: XCTestCase {
 
         // Then
         XCTAssertEqual(sut.state.direction, .selectedToUsd)
-        let result = AmountParser.parse(sut.state.bottomAmount)
-        XCTAssertEqual(result, 0.05, "1 MXN / 20 = 0.05 USD")
+        XCTAssertEqual(sut.state.bottomAmount, "0.05", "1 MXN / 20 = 0.05 USD")
     }
 
     // Selecting a Currency Updates the Exchange Rate and Recalculates Bottom Amount
@@ -153,8 +150,7 @@ final class ExchangeViewModelTests: XCTestCase {
         sut.currencySelected(Currency(code: "USD"))
 
         // Then
-        let result = AmountParser.parse(sut.state.bottomAmount)
-        XCTAssertEqual(result, 90.0, "100 / 0.9 = 90")
+        XCTAssertEqual(sut.state.bottomAmount, "90", "100 / 0.9 = 90")
     }
 
     // Non-numeric Input is rejected and Bottom Amount is set to Empty
