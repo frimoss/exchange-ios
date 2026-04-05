@@ -63,3 +63,21 @@ enum ExchangeError: LocalizedError {
         }
     }
 }
+
+// MARK: - Extension ExchangeError: Equatable -
+
+extension ExchangeError: Equatable {
+    
+    static func == (lhs: ExchangeError, rhs: ExchangeError) -> Bool {
+        switch (lhs, rhs) {
+        case (.emptyResponse, .emptyResponse),
+             (.offline, .offline),
+             (.serverError, .serverError):
+            return true
+        case (.unknown(let lhsError), .unknown(let rhsError)):
+            return lhsError.localizedDescription == rhsError.localizedDescription
+        default:
+            return false
+        }
+    }
+}
