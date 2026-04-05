@@ -87,4 +87,17 @@ final class ExchangeErrorTests: XCTestCase {
         
         XCTAssertEqual(error.errorDescription, expected)
     }
+    
+    func test_allErrorCases_haveNonEmptyDescriptions() {
+        let allCases: [ExchangeError] = [
+            .emptyResponse,
+            .offline,
+            .serverError,
+            .unknown(URLError(.badURL))
+        ]
+        
+        for error in allCases {
+            XCTAssertFalse(error.errorDescription?.isEmpty ?? true, "Description for \(error) should not be empty")
+        }
+    }
 }
