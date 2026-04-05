@@ -88,7 +88,7 @@ final class ExchangeViewController: UIViewController {
         } onChange: { [weak self] in
             // Safe: Put in the Main Thread
             Task { @MainActor [weak self] in
-                // Run SetupObservation() again
+                // Run Loop
                 self?.setupObservation()
             }
         }

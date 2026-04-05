@@ -19,14 +19,14 @@ final class MockTickerService: TickerServiceProtocol {
     
     // MARK: - Mock Methods
     
-    func fetchTickers(currencies: [String]) async throws -> [exchange.ExchangeRate] {
+    func fetchTickers(currencies: [String]) async throws -> [ExchangeRate] {
         // If we set a specific error - throw it
         if let error = stubbedError { throw error }
         
         return mockRates
     }
     
-    func fetchAvailableCurrencies() async throws -> [exchange.Currency] {
+    func fetchAvailableCurrencies() async throws -> [Currency] {
         return mockCurrencies
     }
 }

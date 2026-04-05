@@ -8,8 +8,8 @@
 import Foundation
 
 protocol TickerServiceProtocol {
-    func fetchAvailableCurrencies() async throws -> [Currency]
     func fetchTickers(currencies: [String]) async throws -> [ExchangeRate]
+    func fetchAvailableCurrencies() async throws -> [Currency]
 }
 
 final class TickerService: TickerServiceProtocol {
@@ -31,16 +31,13 @@ final class TickerService: TickerServiceProtocol {
     // MARK: - Get Tickers
     
     func fetchTickers(currencies: [String]) async throws -> [ExchangeRate] {
-        
         // Same cache Key for same Currencies ["ARS", "COP"] == ["COP", "ARS"]
         let sorted = currencies.sorted()
-        
         let cacheKey = sorted.joined(separator: ",") // Key String: "ARS,COP,MXN,BRL"
         
         // Return Tickers from Cache if exist
         if let cached = memoryCache[cacheKey] {
             print("Get Tickers from Cache")
-            
             return cached
         }
         
