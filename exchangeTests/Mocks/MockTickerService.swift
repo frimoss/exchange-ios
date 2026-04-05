@@ -10,23 +10,23 @@ import Foundation
 
 final class MockTickerService: TickerServiceProtocol {
     
-    // MARK: - Mock Properties
+    // MARK: - Stub Properties
     
-    var shouldThrowError = false
+    var stubbedError: Error?
+
     var mockCurrencies: [Currency] = []
     var mockRates: [ExchangeRate] = []
     
     // MARK: - Mock Methods
-
-    func fetchAvailableCurrencies() async throws -> [Currency] {
-        if shouldThrowError {
-            throw NSError(domain: "Network", code: -1)
-        }
+    
+    func fetchTickers(currencies: [String]) async throws -> [exchange.ExchangeRate] {
+        // If we set a specific error - throw it
+        if let error = stubbedError { throw error }
         
-        return mockCurrencies
-    }
-
-    func fetchTickers(currencies: [String]) async -> [ExchangeRate] {
         return mockRates
+    }
+    
+    func fetchAvailableCurrencies() async throws -> [exchange.Currency] {
+        return mockCurrencies
     }
 }
