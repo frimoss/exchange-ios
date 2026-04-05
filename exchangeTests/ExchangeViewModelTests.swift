@@ -30,7 +30,7 @@ final class ExchangeViewModelTests: XCTestCase {
         try await super.tearDown()
     }
     
-    // MARK: - Group 1: Initial Data Loading -
+    // MARK: - Group 1: Fetching Data & Error Handling -
 
     // Successful Data Load sets Status = .loaded and correct Currency count
     func test_loadInitialData_success_setsLoadedStatus() async throws {
@@ -85,8 +85,50 @@ final class ExchangeViewModelTests: XCTestCase {
         XCTAssertEqual(sut.state.alertMessage, expectedMessage)
         XCTAssertEqual(sut.state.status, .loaded)
     }
+    
+    // Simulating an Apple Error "No Internet Сonnection"
+    func test_loadInitialData_offlineError_setsOfflineAlertMessage() async throws {
+        // Given
+        mockService.stubbedError = URLError(.notConnectedToInternet)
+        let expectedMessage = ExchangeError.offline.errorDescription
 
-    // MARK: - Group 2: Amount Input Logic -
+        // When
+        sut.loadInitialData()
+        await Task.yield()
+
+        // Then
+        XCTAssertEqual(sut.state.alertMessage, expectedMessage)
+        XCTAssertEqual(sut.state.status, .loaded)
+    }
+    
+    // Simulating Server Error (500 or Timeout)
+    func test_loadInitialData_serverError_setsServerErrorAlertMessage() async throws {
+        // Given
+        mockService.stubbedError = NetworkError.serverError(statusCode: 500)
+        let expectedMessage = ExchangeError.serverError.errorDescription
+
+        // When
+        sut.loadInitialData()
+        await Task.yield()
+
+        // Then
+        XCTAssertEqual(sut.state.alertMessage, expectedMessage)
+        XCTAssertEqual(sut.state.status, .loaded)
+    }
+    
+    // Alert Message Must be nil after it is shown to User
+    func test_dismissAlert_clearsMessage() {
+        // Given
+        sut.state.alertMessage = "Error message for User"
+        
+        // When
+        sut.errorShown()
+        
+        // Then
+        XCTAssertNil(sut.state.alertMessage)
+    }
+
+    // MARK: - Group 2: Calculation Logic -
 
     // Typing in Top Field (USD) Recalculate Bottom Field (MXN)
     func test_topAmountChanged_updatesBottomAmount() {
@@ -120,7 +162,7 @@ final class ExchangeViewModelTests: XCTestCase {
         XCTAssertEqual(sut.state.bottomAmount, "0")
     }
     
-    // MARK: - Group 3: User Actions -
+    // MARK: - Group 3: User Interactions & UI Flow -
 
     // Swap Reverses Direction and Recalculate Amounts
     func test_swapTapped_reversesDirectionAndRecalculates() {
