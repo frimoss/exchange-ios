@@ -15,7 +15,7 @@ enum AmountParser {
     
     // MARK: - Formatters
     
-    // Formatter for Parsing Amount
+    /// Formatter for Parsing Amount
     private static let displayFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
@@ -26,7 +26,7 @@ enum AmountParser {
         return formatter
     }()
     
-    // Formatter for Raw Value of Amount
+    /// Formatter for Raw Value of Amount
     private static let rawFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal

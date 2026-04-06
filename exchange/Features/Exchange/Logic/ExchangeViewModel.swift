@@ -89,6 +89,7 @@ final class ExchangeViewModel {
         return formatter.format(amount)
     }
     
+    /// Reset the Error after the display
     func errorShown() {
         updateState { $0.alertMessage = nil }
     }
