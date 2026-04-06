@@ -11,12 +11,9 @@ enum AmountParser {
     
     // MARK: - Amount Limits
     
-    enum Constants {
-        static let maxDigitsBeforeSeparator = 7 // 1_000_000
-        static let maxDigitsAfterSeparator = 2  // 0.12
-    }
+    private typealias Config = AppConfig.Amount
     
-    // MARK: - Amount Formatters
+    // MARK: - Formatters
     
     // Formatter for Parsing Amount
     private static let displayFormatter: NumberFormatter = {
@@ -35,14 +32,12 @@ enum AmountParser {
         formatter.numberStyle = .decimal
         formatter.locale = .current
         formatter.usesGroupingSeparator = false // No Separator
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = Constants.maxDigitsAfterSeparator
         formatter.roundingMode = .halfUp // Math Rounding Up
         
         return formatter
     }()
     
-    // MARK: -  Validation Logic
+    // MARK: - Validation Logic
     
     static func isValid(_ text: String) -> Bool {
         // Check Separator
@@ -59,25 +54,28 @@ enum AmountParser {
         let positiveBeforeSeparator = beforeSeparator.replacingOccurrences(of: "-", with: "")
         
         // Max Digits Validation
-        if positiveBeforeSeparator.count > Constants.maxDigitsBeforeSeparator { return false }
-        if afterSeparator.count > Constants.maxDigitsAfterSeparator { return false }
+        if positiveBeforeSeparator.count > Config.maxDigitsBeforeSeparator { return false }
+        if afterSeparator.count > Config.highPrecisionMaxFractionDigits { return false }
         
         return true
     }
     
-    // MARK: - Decimal Value from Text Amount
+    // MARK: - Formatting Logic
     
+    /// Decimal Value from Text Amount
     static func parse(_ text: String?) -> Decimal? {
         guard let text = text, !text.isEmpty else { return nil }
         
         return displayFormatter.number(from: text)?.decimalValue
     }
     
-    // MARK: - Raw Value from Formatted Amount
-    
+    /// Raw Value from Formatted Amount
     static func getRawValue(from text: String?) -> String {
         guard let decimal = parse(text) else { return text ?? "" }
-        
+  
+        // Adaptive Fraction Digits
+        rawFormatter.maximumFractionDigits = Config.precision(for: decimal)
+
         return rawFormatter.string(from: decimal as NSDecimalNumber) ?? ""
     }
 }
