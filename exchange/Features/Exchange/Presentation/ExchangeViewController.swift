@@ -119,9 +119,11 @@ final class ExchangeViewController: UIViewController {
     
     private func updateExchangeRate(_ state: ExchangeViewState) {
         guard let rate = state.exchangeRate else { return }
+        
+        let formattedRate = viewModel.format(amount: rate)
         let code = state.selectedCurrency.code.uppercased()
         
-        exchangeRateLabel.text = "1 USDc = \(rate.toCurrency()) \(code)"
+        exchangeRateLabel.text = "1 USDc = \(formattedRate) \(code)"
     }
     
     // MARK: - Configure Input Fields

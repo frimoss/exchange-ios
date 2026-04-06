@@ -12,11 +12,13 @@ enum ExchangeAssembly {
     
     static func build() -> UIViewController {
         
-        let client = NetworkClient() // MockNetworkClient()
+        let client = NetworkClient()
         
         let service = TickerService(client: client)
+
+        let formatter = AmountFormatter() // Uses Locale.current by default
         
-        let viewModel = ExchangeViewModel(service: service)
+        let viewModel = ExchangeViewModel(service: service, formatter: formatter)
         
         let viewController = ExchangeViewController(viewModel: viewModel)
         

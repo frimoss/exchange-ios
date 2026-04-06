@@ -18,11 +18,13 @@ final class ExchangeViewModel {
     // MARK: - Private Dependencies
     
     private let service: TickerServiceProtocol
+    private let formatter: AmountFormatter
     
     // MARK: - Init
     
-    init(service: TickerServiceProtocol) {
+    init(service: TickerServiceProtocol, formatter: AmountFormatter) {
         self.service = service
+        self.formatter = formatter
     }
     
     // MARK: - Public Actions
@@ -80,6 +82,11 @@ final class ExchangeViewModel {
             newState.selectedCurrency = currency
             self.syncAmounts(in: &newState)
         }
+    }
+    
+    /// Formatting Amount by Locale
+    func format(amount: Decimal?) -> String {
+        return formatter.format(amount)
     }
     
     func errorShown() {
@@ -181,6 +188,6 @@ final class ExchangeViewModel {
             result = sourceIsTop ? amount / rate : amount * rate
         }
         
-        return result.toCurrency()
+        return formatter.format(result)
     }
 }
