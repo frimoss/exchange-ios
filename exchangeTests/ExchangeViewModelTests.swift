@@ -166,7 +166,33 @@ final class ExchangeViewModelTests: XCTestCase {
         XCTAssertEqual(sut.state.bottomAmount, "0")
     }
     
-    // MARK: - Group 3: User Interactions & UI Flow -
+    // MARK: - Group 3: Precision Logic -
+    
+    /// Small value (like an ARS rate)
+    func test_format_usesHighPrecisionForSmallValues() {
+        // Given
+        let smallValue: Decimal = 0.000992
+        
+        // When
+        let result = sut.format(amount: smallValue)
+        
+        // Then: It should show 6 digits (AppConfig limits)
+        XCTAssertEqual(result, "0.000992")
+    }
+    
+    /// Normal value
+    func test_format_usesStandardPrecisionForLargeValues() {
+        // Given
+        let normalValue: Decimal = 1234.5678
+        
+        // When
+        let result = sut.format(amount: normalValue)
+        
+        // Then: It should round to 2 digits (AppConfig limits)
+        XCTAssertEqual(result, "1,234.57")
+    }
+    
+    // MARK: - Group 4: User Interactions & UI Flow -
 
     // Swap Reverses Direction and Recalculate Amounts
     func test_swapTapped_reversesDirectionAndRecalculates() {
