@@ -15,18 +15,22 @@ final class ExchangeViewModelTests: XCTestCase {
 
     private var sut: ExchangeViewModel!
     private var mockService: MockTickerService!
+    private var formatter: AmountFormatter!
 
     // MARK: - Lifecycle
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockService = MockTickerService()
-        sut = ExchangeViewModel(service: mockService)
+        formatter = AmountFormatter(locale: Locale(identifier: "en_US"))
+        /// Use a fixed locale for tests so they pass on any machine
+        sut = ExchangeViewModel(service: mockService, formatter: formatter)
     }
 
     override func tearDown() async throws {
         sut = nil
         mockService = nil
+        formatter = nil
         try await super.tearDown()
     }
     

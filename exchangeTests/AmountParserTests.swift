@@ -27,9 +27,9 @@ final class AmountParserTests: XCTestCase {
         XCTAssertFalse(AmountParser.isValid(input))
     }
 
-    // The limit is 2 digits after dot. We insert 3 digits.
+    // The max limit is 6 digits after dot. We insert 7 digits.
     func test_isValid_exceedingMaxDigitsAfterSeparator_returnsFalse() {
-        let input = "50\(separator)123"
+        let input = "50\(separator)1234567"
         
         XCTAssertFalse(AmountParser.isValid(input))
     }
