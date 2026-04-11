@@ -21,7 +21,7 @@ enum AppConfig {
         
         /// Maximum Fraction Digits
         static func precision(for value: Decimal) -> Int {
-            return (value > 0 && value < 1.0) ? highPrecisionMaxFractionDigits : defaultMaxFractionDigits
+            return (value > 0 && value < 0.01) ? highPrecisionMaxFractionDigits : defaultMaxFractionDigits
         }
     }
 }
