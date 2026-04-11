@@ -145,6 +145,9 @@ final class ExchangeViewController: UIViewController {
             isCurrencySelectionEnabled: state.direction == .selectedToUsd,
             onAmountChanged: { [weak self] newAmount in
                 self?.viewModel.topAmountChanged(newAmount)
+            },
+            formatAction: { [weak self] decimal in
+                return self?.viewModel.format(amount: decimal) ?? ""
             }
         )
     }
@@ -156,6 +159,9 @@ final class ExchangeViewController: UIViewController {
             isCurrencySelectionEnabled: state.direction == .usdToSelected,
             onAmountChanged: { [weak self] newAmount in
                 self?.viewModel.bottomAmountChanged(newAmount)
+            },
+            formatAction: { [weak self] decimal in
+                return self?.viewModel.format(amount: decimal) ?? ""
             }
         )
     }

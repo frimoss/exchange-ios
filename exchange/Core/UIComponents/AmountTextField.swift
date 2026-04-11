@@ -9,6 +9,10 @@ import UIKit
 
 final class AmountTextField: UITextField {
     
+    // MARK: Public
+    
+    var formatAction: ((Decimal?) -> String)?
+    
     // MARK: - Init
     
     override init(frame: CGRect) {
@@ -69,7 +73,7 @@ extension AmountTextField: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let decimal = AmountParser.parse(textField.text) else { return }
         
-        textField.text = decimal.toCurrency()
+        textField.text = formatAction?(decimal)
     }
 
     // Validation

@@ -170,7 +170,7 @@ final class ExchangeInputView: UIView {
     
     func configure(with config: Configuration) {
         updateCurrencyUI(config)
-        updateAmount(config.amount)
+        updateAmount(config)
     }
     
     private func updateCurrencyUI(_ config: Configuration) {
@@ -183,12 +183,16 @@ final class ExchangeInputView: UIView {
         self.textChangeHandler = config.onAmountChanged
     }
     
-    private func updateAmount(_ amount: String) {
+    private func updateAmount(_ config: Configuration) {
         guard !amountTextField.isFirstResponder else {
-            if amountTextField.text != amount { amountTextField.text = amount }
+            if amountTextField.text != config.amount { amountTextField.text = config.amount }
             return
         }
-        amountTextField.text = AmountParser.parse(amount)?.toCurrency()
+        
+        self.amountTextField.formatAction = config.formatAction
+        
+        let decimal = AmountParser.parse(config.amount)
+        amountTextField.text = config.formatAction(decimal)
     }
 }
 
@@ -200,5 +204,6 @@ extension ExchangeInputView {
         let amount: String
         let isCurrencySelectionEnabled: Bool
         let onAmountChanged: (String) -> Void
+        let formatAction: (Decimal?) -> String
     }
 }
