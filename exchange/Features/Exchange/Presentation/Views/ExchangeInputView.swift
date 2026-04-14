@@ -163,7 +163,7 @@ final class ExchangeInputView: UIView {
     }
     
     @objc private func handleViewTap() {
-        amountTextField.becomeFirstResponder()
+        _ = amountTextField.becomeFirstResponder()
     }
     
     // MARK: - Configuration
