@@ -8,11 +8,13 @@
 import Foundation
 
 enum NetworkError: Error, LocalizedError {
+    
     case invalidURL
     case noData
     case decodingFailed
     case serverError(statusCode: Int)
     
+    /// Error Log Messages
     var errorDescription: String? {
         switch self {
         case .invalidURL: return "Invalid URL"

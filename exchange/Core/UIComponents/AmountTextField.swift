@@ -9,6 +9,10 @@ import UIKit
 
 final class AmountTextField: UITextField {
     
+    // MARK: Public
+    
+    var formatAction: ((Decimal?) -> String)?
+    
     // MARK: - Init
     
     override init(frame: CGRect) {
@@ -69,7 +73,7 @@ extension AmountTextField: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let decimal = AmountParser.parse(textField.text) else { return }
         
-        textField.text = decimal.toCurrency()
+        textField.text = formatAction?(decimal)
     }
 
     // Validation
@@ -81,30 +85,30 @@ extension AmountTextField: UITextFieldDelegate {
         let currentText = textField.text ?? ""
         let separator = Locale.current.decimalSeparator ?? "."
         
-        // Replace with Locale Separator
+        // 1. Unify Separator for current User Locale
         let replacement = (string == "." || string == ",") ? separator : string
         
-        // Create Range
+        // 2. Build the proposed string
         guard let swiftRange = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: swiftRange, with: replacement)
         
-        // Auto-replace to "0" + separator
+        // 3. Prevent multiple separators or invalid characters
+        let allowedCharacters = CharacterSet.decimalDigits.union(CharacterSet(charactersIn: separator))
+        if replacement.rangeOfCharacter(from: allowedCharacters.inverted) != nil {
+            return false
+        }
+        
+        // 4. Handle auto-prefixing: "." becomes "0."
         if updatedText == separator {
             textField.text = "0" + separator
             
             return false
         }
-        
-        // Only Numbers + Separator
-        let allowedCharacters = CharacterSet.decimalDigits.union(CharacterSet(charactersIn: separator))
-        if replacement.rangeOfCharacter(from: allowedCharacters.inverted) != nil {
-            return false
-        }
 
-        // Validation
+        // 5. Final Validation check
         let isValid = AmountParser.isValid(updatedText)
         
-        // Replaced Separator
+        // If we manually replaced a Separator, set the text manually
         if isValid && replacement != string {
             textField.text = updatedText
             

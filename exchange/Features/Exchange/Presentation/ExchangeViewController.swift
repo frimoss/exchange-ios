@@ -55,10 +55,6 @@ final class ExchangeViewController: UIViewController {
     // Haptic Feedback on Swap Button
     private let haptic = UIImpactFeedbackGenerator(style: .light)
     
-    // MARK: - Properties
-    
-    private var lastShownError: String?
-    
     // MARK: - Init
     
     init(viewModel: ExchangeViewModel) {
@@ -92,7 +88,7 @@ final class ExchangeViewController: UIViewController {
         } onChange: { [weak self] in
             // Safe: Put in the Main Thread
             Task { @MainActor [weak self] in
-                // Run SetupObservation() again
+                // Run Loop
                 self?.setupObservation()
             }
         }
@@ -101,37 +97,33 @@ final class ExchangeViewController: UIViewController {
     // MARK: - Render
     
     private func render(_ state: ExchangeViewState) {
-        switch state.status {
-        case .isLoading:
-            setLoading(true)
-            
-        case .error(let message):
-            setLoading(false)
+        // Check Error
+        if let message = state.alertMessage {
             showErrorAlert(message)
-            print("Status - Error: \(message)")
-            return // Stop here if Error
-        
-        case .loaded:
-            setLoading(false)
-            print("Status - Loaded")
+            viewModel.errorShown()
         }
         
+        // Loading
+        setLoading(state.status == .isLoading)
+        
+        // Update UI
         updateExchangeRate(state)
         updateInputFields(state)
     }
     
     private func setLoading(_ isLoading: Bool) {
         view.isUserInteractionEnabled = !isLoading
-        print("Status - Loading...")
     }
     
     // MARK: - Update Exchange Rate Label
     
     private func updateExchangeRate(_ state: ExchangeViewState) {
         guard let rate = state.exchangeRate else { return }
+        
+        let formattedRate = viewModel.format(amount: rate)
         let code = state.selectedCurrency.code.uppercased()
         
-        exchangeRateLabel.text = "1 USDc = \(rate.toCurrency()) \(code)"
+        exchangeRateLabel.text = "1 USDc = \(formattedRate) \(code)"
     }
     
     // MARK: - Configure Input Fields
@@ -153,6 +145,9 @@ final class ExchangeViewController: UIViewController {
             isCurrencySelectionEnabled: state.direction == .selectedToUsd,
             onAmountChanged: { [weak self] newAmount in
                 self?.viewModel.topAmountChanged(newAmount)
+            },
+            formatAction: { [weak self] decimal in
+                return self?.viewModel.format(amount: decimal) ?? ""
             }
         )
     }
@@ -164,6 +159,9 @@ final class ExchangeViewController: UIViewController {
             isCurrencySelectionEnabled: state.direction == .usdToSelected,
             onAmountChanged: { [weak self] newAmount in
                 self?.viewModel.bottomAmountChanged(newAmount)
+            },
+            formatAction: { [weak self] decimal in
+                return self?.viewModel.format(amount: decimal) ?? ""
             }
         )
     }
@@ -221,17 +219,8 @@ final class ExchangeViewController: UIViewController {
     }
     
     private func showErrorAlert(_ message: String) {
-        // Prevent double Alert
-        guard lastShownError != message else { return }
-        lastShownError = message
-        
-        // Create Alert
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alert.addAction(.init(title: "OK", style: .default) { [weak self] _ in
-            self?.lastShownError = nil
-        })
-        
-        // Show Alert
+        let alert = UIAlertController(title: "Network Error", message: message, preferredStyle: .alert)
+        alert.addAction(.init(title: "OK", style: .default))
         present(alert, animated: true)
     }
     

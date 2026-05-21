@@ -8,8 +8,8 @@
 import Foundation
 
 protocol TickerServiceProtocol {
+    func fetchTickers(currencies: [String]) async throws -> [ExchangeRate]
     func fetchAvailableCurrencies() async throws -> [Currency]
-    func fetchTickersWithFallback(currencies: [String]) async -> [ExchangeRate]
 }
 
 final class TickerService: TickerServiceProtocol {
@@ -20,7 +20,7 @@ final class TickerService: TickerServiceProtocol {
     
     // MARK: - Private Properties
     
-    private var cache: [String: [ExchangeRate]] = [:]
+    private var memoryCache: [String: [ExchangeRate]] = [:]
     
     // MARK: - Init
     
@@ -28,19 +28,16 @@ final class TickerService: TickerServiceProtocol {
         self.client = client
     }
     
-    // MARK: - Private Get Tickers
+    // MARK: - Get Tickers
     
     func fetchTickers(currencies: [String]) async throws -> [ExchangeRate] {
-        
         // Same cache Key for same Currencies ["ARS", "COP"] == ["COP", "ARS"]
         let sorted = currencies.sorted()
-        
         let cacheKey = sorted.joined(separator: ",") // Key String: "ARS,COP,MXN,BRL"
         
         // Return Tickers from Cache if exist
-        if let cached = cache[cacheKey] {
+        if let cached = memoryCache[cacheKey] {
             print("Get Tickers from Cache")
-            
             return cached
         }
         
@@ -48,28 +45,16 @@ final class TickerService: TickerServiceProtocol {
         let rates: [ExchangeRate] = try await client.request(TickerEndpoint.tickers(sorted))
         
         // Save in Cache
-        cache[cacheKey] = rates
+        memoryCache[cacheKey] = rates
         print("Rates were Saved in Cache")
         
         return rates
     }
     
-    // MARK: - Public Get Currencies
+    // MARK: - Get Currencies
     
     func fetchAvailableCurrencies() async throws -> [Currency] {
         // TODO: Fix return try await client.request(TickerEndpoint.currencies)
         return Currency.mockCurrencies
-    }
-    
-    // MARK: - Public Fallback Methods -
-    
-    func fetchTickersWithFallback(currencies: [String]) async -> [ExchangeRate] {
-        do {
-            return try await fetchTickers(currencies: currencies)
-        } catch {
-            print("Network Error: \(error.localizedDescription)")
-            print("Using Mock Rates")
-            return ExchangeRate.mockRates
-        }
     }
 }
